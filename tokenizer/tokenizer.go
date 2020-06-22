@@ -50,6 +50,10 @@ func (t *Tokenizer) nextToken() tokens.Token {
 		panic("numbers not implemented")
 	case '(':
 
+	case ',':
+		return tokens.Comma{}
+	case ';':
+		return tokens.SemiColon{}
 	}
 
 	return nil

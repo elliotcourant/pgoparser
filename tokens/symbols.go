@@ -6,6 +6,12 @@ func (s Comma) Token() {}
 
 func (s Comma) String() string { return "," }
 
+type SemiColon struct{}
+
+func (s SemiColon) Token() {}
+
+func (s SemiColon) String() string { return ";" }
+
 type Equals struct{}
 
 func (s Equals) Token() {}
