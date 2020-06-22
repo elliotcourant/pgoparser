@@ -1,0 +1,6 @@
+var (
+    keywordMap = map[string]func(value string) Keyword{ {{range .}}
+        "{{.}}": New{{.}}Keyword,{{end}}
+    }
+)
+
