@@ -24,6 +24,11 @@ func (keyword {{.Keyword}}) Token() {}
 // Word implements the Word interface for {{.Keyword}}.
 func (keyword {{.Keyword}}) Word() {}
 
+// Quotes will always return quotes.None for a valid keyword.
+func (keyword {{.Keyword}}) Quotes() quotes.Quotes {
+    return quotes.None
+}
+
 // Keyword implements the Keyword interface for {{.Keyword}}.
 func (keyword {{.Keyword}}) Keyword() {}
 

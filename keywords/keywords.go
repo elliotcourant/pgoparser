@@ -5,6 +5,7 @@ import (
 	"strings"
 )
 
+//go:generate keywordgen --input=./keywords.yaml --keyword-template=./templates/keywords.template --keyword-map-template=./templates/keyword_map.template
 type Keyword interface {
 	words.Word
 	Keyword()
