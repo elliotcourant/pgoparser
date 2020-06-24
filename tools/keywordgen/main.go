@@ -55,8 +55,8 @@ func main() {
 package keywords
 
 import (
-    "strings"
 	"github.com/elliotcourant/pgoparser/quotes"
+    "strings"
 )
 
 `)

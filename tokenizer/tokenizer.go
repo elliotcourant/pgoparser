@@ -2,6 +2,7 @@ package tokenizer
 
 import (
 	"github.com/elliotcourant/pgoparser/tokens"
+	"github.com/elliotcourant/pgoparser/whitespace"
 )
 
 var (
@@ -33,15 +34,29 @@ func (t *Tokenizer) scan() byte {
 	return t.input[t.offset-1]
 }
 
+func (t *Tokenizer) scanString() string {
+	return string(t.scan())
+}
+
 func (t *Tokenizer) nextToken() tokens.Token {
 	character := t.peak()
 	switch character {
 	case ' ':
-		panic("whitespace not implemented")
+		return whitespace.Whitespace{
+			Type:  whitespace.Space,
+			Value: t.scanString(),
+		}
 	case '\t':
-		panic("whitespace not implemented")
-	case '\n', 'r':
-		panic("whitespace not implemented")
+		return whitespace.Whitespace{
+			Type:  whitespace.Tab,
+			Value: t.scanString(),
+		}
+	case '\n', '\r':
+		// TODO (elliotcourant) Add handling of the return.
+		return whitespace.Whitespace{
+			Type:  whitespace.Newline,
+			Value: t.scanString(),
+		}
 	case '\'':
 		panic("single quoted string not implemented")
 	case '"':
