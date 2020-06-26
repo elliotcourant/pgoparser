@@ -69,6 +69,8 @@ func (t *Tokenizer) nextToken() tokens.Token {
 		return tokens.Comma{}
 	case ';':
 		return tokens.SemiColon{}
+	case '=':
+		return tokens.Equals{}
 	}
 
 	return nil
