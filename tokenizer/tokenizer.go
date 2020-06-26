@@ -34,6 +34,12 @@ func (t *Tokenizer) scan() byte {
 	return t.input[t.offset-1]
 }
 
+// scanAndPeak will consume the current character and will peak the following character.
+func (t *Tokenizer) scanAndPeak() byte {
+	t.scan()
+	return t.peak()
+}
+
 func (t *Tokenizer) scanString() string {
 	return string(t.scan())
 }
@@ -51,8 +57,22 @@ func (t *Tokenizer) nextToken() tokens.Token {
 			Type:  whitespace.Tab,
 			Value: t.scanString(),
 		}
-	case '\n', '\r':
-		// TODO (elliotcourant) Add handling of the return.
+	case '\r':
+		// If the next character is a new line then we want to include that with this character and return it as a single
+		// token.
+		if nextCharacter := t.scanAndPeak(); nextCharacter == '\n' {
+			return whitespace.Whitespace{
+				Type:  whitespace.Newline,
+				Value: "\r\n",
+			}
+		}
+
+		// If not we can simply return this \r as a token.
+		return whitespace.Whitespace{
+			Type:  whitespace.Newline,
+			Value: "\r",
+		}
+	case '\n':
 		return whitespace.Whitespace{
 			Type:  whitespace.Newline,
 			Value: t.scanString(),
