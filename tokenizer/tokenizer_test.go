@@ -29,6 +29,7 @@ func TestTokenizer_NextToken(t *testing.T) {
 	})
 
 	t.Run("symbols", func(t *testing.T) {
+		// TODO (elliotcourant) Add tests for more symbols.
 		tokenizer := NewTokenizer(",;=")
 
 		testNextToken(t, tokenizer, common.Comma)
@@ -37,5 +38,15 @@ func TestTokenizer_NextToken(t *testing.T) {
 
 		// EOF
 		testNextToken(t, tokenizer, common.EOF)
+	})
+
+	t.Run("numbers", func(t *testing.T) {
+		str := "1234.56"
+		tokenizer := NewTokenizer(str)
+
+		token, err := tokenizer.nextToken()
+		assert.NoError(t, err, "should not have an error parsing number")
+		assert.IsType(t, tokens.Number{}, token)
+		assert.Equal(t, str, token.String())
 	})
 }

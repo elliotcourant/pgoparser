@@ -87,8 +87,10 @@ func (t *Tokenizer) nextToken() (tokens.Token, error) {
 		// If we encounter a double quote, then we want to try to tokenize it as a double quoted string.
 		return t.tokenizeDoubleQuotedString()
 	case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
-		panic("numbers not implemented")
+		return t.tokenizeNumber()
 	case '(':
+
+	case ')':
 
 	case ',':
 		return t.consumeAndReturn(common.Comma)
