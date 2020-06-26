@@ -1,8 +1,12 @@
 package tokenizer
 
 import (
+	"strings"
+
+	"github.com/elliotcourant/pgoparser/quotes"
 	"github.com/elliotcourant/pgoparser/tokens"
-	"github.com/elliotcourant/pgoparser/whitespace"
+	"github.com/elliotcourant/pgoparser/words"
+	"github.com/pkg/errors"
 )
 
 var (
@@ -15,6 +19,13 @@ type (
 		offset int
 	}
 )
+
+func NewTokenizer(str string) *Tokenizer {
+	return &Tokenizer{
+		input:  str,
+		offset: 0,
+	}
+}
 
 func (t *Tokenizer) peak() byte {
 	if len(t.input) < t.offset+1 {
@@ -44,54 +55,112 @@ func (t *Tokenizer) scanString() string {
 	return string(t.scan())
 }
 
-func (t *Tokenizer) nextToken() tokens.Token {
+func (t *Tokenizer) consumeAndReturn(token tokens.Token) (tokens.Token, error) {
+	t.scan()          // Consume the current character.
+	return token, nil // And return without an error.
+}
+
+func (t *Tokenizer) nextToken() (tokens.Token, error) {
 	character := t.peak()
 	switch character {
+	case eof:
+		return t.consumeAndReturn(common.EOF)
 	case ' ':
-		return whitespace.Whitespace{
-			Type:  whitespace.Space,
-			Value: t.scanString(),
-		}
+		return t.consumeAndReturn(common.Space)
 	case '\t':
-		return whitespace.Whitespace{
-			Type:  whitespace.Tab,
-			Value: t.scanString(),
-		}
+		return t.consumeAndReturn(common.Tab)
 	case '\r':
 		// If the next character is a new line then we want to include that with this character and return it as a single
 		// token.
 		if nextCharacter := t.scanAndPeak(); nextCharacter == '\n' {
-			return whitespace.Whitespace{
-				Type:  whitespace.Newline,
-				Value: "\r\n",
-			}
+			return t.consumeAndReturn(common.SpecialNewline)
 		}
 
 		// If not we can simply return this \r as a token.
-		return whitespace.Whitespace{
-			Type:  whitespace.Newline,
-			Value: "\r",
-		}
+		return t.consumeAndReturn(common.Return)
 	case '\n':
-		return whitespace.Whitespace{
-			Type:  whitespace.Newline,
-			Value: t.scanString(),
-		}
+		return t.consumeAndReturn(common.Newline)
 	case '\'':
-		panic("single quoted string not implemented")
+		// If we encounter an opening single quote, then tokenize a single quoted string.
+		return t.tokenizeSingleQuotedString()
 	case '"':
-		panic("double quoted string not implemented")
+		// If we encounter a double quote, then we want to try to tokenize it as a double quoted string.
+		return t.tokenizeDoubleQuotedString()
 	case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
 		panic("numbers not implemented")
 	case '(':
 
 	case ',':
-		return tokens.Comma{}
+		return t.consumeAndReturn(common.Comma)
 	case ';':
-		return tokens.SemiColon{}
+		return t.consumeAndReturn(common.SemiColon)
 	case '=':
-		return tokens.Equals{}
+		return t.consumeAndReturn(common.Equals)
 	}
 
-	return nil
+	return nil, nil
+}
+
+// tokenizeSingleQuotedString will consume the current starting character (which should be a ') and then read from the
+// buffer until it finds another '. It will skip the ' if it is escaped though by a second ' immediately following it.
+// It will then return a single quoted word token with a value that is unquoted.
+func (t *Tokenizer) tokenizeSingleQuotedString() (tokens.Token, error) {
+	var buf strings.Builder
+	t.scan() // Consume the first character, this would not have been consumed by the caller but would be '
+ScanLoop:
+	for {
+		character := t.peak()
+		switch character {
+		case '\'':
+			nextCharacter := t.scanAndPeak() // Consume the ' but peak the following character to see if it's escaped.
+			// If we find another ' after this one then this one is being escaped and we need to parse it as such.
+			if nextCharacter == '\'' {
+				// Write a single ' to the string buffer.
+				buf.WriteByte(nextCharacter)
+			} else {
+				// But if the next character is not another ' then that means the ' we saw was the end of the single quoted
+				// string.
+				break ScanLoop
+			}
+		case eof:
+			// If we reach the end of the file and we have not yet found the closing ' then we should return an error.
+			return nil, errors.Errorf("unterminated string literal")
+		default:
+			// Scan the current byte into the buffer.
+			buf.WriteByte(t.scan())
+		}
+	}
+
+	// Return a single quoted string token.
+	return words.NewWord(buf.String(), quotes.Single), nil
+}
+
+// tokenizeDoubleQuotedString will consume the current starting character (which should be a ") and then read from the
+// buffer until it finds another ". It will not check for any escaped characters as double quoted strings should be
+// identifiers in PostgreSQL. If it reaches the end of the file without finding a closing quote then it will return an
+// error.
+func (t *Tokenizer) tokenizeDoubleQuotedString() (tokens.Token, error) {
+	var buf strings.Builder
+	t.scan() // Consume the first double quote.
+
+ScanLoop:
+	for {
+		character := t.peak()
+		switch character {
+		case '"':
+			// We have found another double quote, we can exit our loop.
+			break ScanLoop
+		case eof:
+			// If we reach the end of the file and we have not yet found the closing ' then we should return an error.
+			return nil, errors.Errorf("expected close delimiter '\"' before EOF")
+		default:
+			buf.WriteByte(t.scan())
+		}
+	}
+
+	// Get the string of the thing we just parsed.
+	str := buf.String()
+
+	// Now that we have our string built we need to try to convert it into a word.
+	return words.NewWord(str, quotes.Double), nil
 }
