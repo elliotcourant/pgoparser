@@ -64,4 +64,16 @@ func TestTokenizer_NextToken(t *testing.T) {
 		assert.IsType(t, tokens.SingleLineComment{}, token)
 		assert.Equal(t, "this is a test", token.String())
 	})
+
+	t.Run("multi line comment", func(t *testing.T) {
+		text := `/* i am
+		a multi line
+		commen */`
+
+		tokenizer := NewTokenizer(text)
+
+		token, err := tokenizer.nextToken()
+		assert.NoError(t, err, "should not have an error parsing multi line comment")
+		assert.IsType(t, tokens.MultiLineComment{}, token)
+	})
 }

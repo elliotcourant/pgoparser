@@ -81,3 +81,9 @@ type Minus struct{}
 func (s Minus) Token() {}
 
 func (s Minus) String() string { return "-" }
+
+type Division struct{}
+
+func (s Division) Token() {}
+
+func (s Division) String() string { return "/" }

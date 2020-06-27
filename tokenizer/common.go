@@ -19,6 +19,7 @@ type commonTokens struct {
 	Equals           tokens.Equals
 	Plus             tokens.Plus
 	Minus            tokens.Minus
+	Division         tokens.Division
 	LeftParentheses  tokens.LeftParentheses
 	RightParentheses tokens.RightParentheses
 }
@@ -53,6 +54,7 @@ var (
 		Equals:           tokens.Equals{},
 		Plus:             tokens.Plus{},
 		Minus:            tokens.Minus{},
+		Division:         tokens.Division{},
 		LeftParentheses:  tokens.LeftParentheses{},
 		RightParentheses: tokens.RightParentheses{},
 	}

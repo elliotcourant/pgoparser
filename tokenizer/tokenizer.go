@@ -109,6 +109,14 @@ func (t *Tokenizer) nextToken() (tokens.Token, error) {
 
 		// We don't want to consume again since we already did a scan above when we peaked.
 		return common.Minus, nil
+	case '/':
+		// If the following character is a * then that means this is a multi line comment.
+		if nextCharacter := t.scanAndPeak(); nextCharacter == '*' {
+			return t.tokenizeMultiLineComment()
+		}
+
+		// We don't want to consume again since we already did a scan above when we peaked.
+		return common.Division, nil
 	}
 
 	return nil, nil
