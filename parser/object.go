@@ -5,12 +5,8 @@ import (
 	"github.com/elliotcourant/pgoparser/words"
 )
 
-type ObjectName []Identifier
-
-type Identifier string
-
-func (p *parser) parseObjectName() (ObjectName, error) {
-	idents := make(ObjectName, 0)
+func (p *parser) parseObjectName() ([]string, error) {
+	idents := make([]string, 0)
 	for {
 		ident, err := p.parseIdentifier()
 		if err != nil {
@@ -27,10 +23,10 @@ func (p *parser) parseObjectName() (ObjectName, error) {
 	return idents, nil
 }
 
-func (p *parser) parseIdentifier() (Identifier, error) {
+func (p *parser) parseIdentifier() (string, error) {
 	switch nextToken := p.nextToken().(type) {
 	case words.Word:
-		return Identifier(nextToken.String()), nil
+		return nextToken.String(), nil
 	default:
 		return "", p.expected("identifier", nextToken)
 	}

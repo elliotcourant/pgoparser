@@ -23,6 +23,30 @@ func (p *parser) nextToken() (token tokens.Token) {
 	return
 }
 
+// previousToken will move the cursor back to the last non-whitespace/non-comment token.
+func (p *parser) previousToken() tokens.Token {
+	index := p.index
+	for {
+		index -= 1
+
+		// Prevent an out of range error.
+		if index > len(p.buffer)-1 {
+			return tokens.EOF{}
+		}
+
+		token := p.buffer[index-1]
+
+		switch token.(type) {
+		case whitespace.Whitespace, tokens.Comment:
+			// If the token is whitespace or a comment skip it.
+			continue
+		default:
+			p.index = index
+			return token
+		}
+	}
+}
+
 // peakToken will return the first non-whitespace token that has not yet been processed. Or it will return the EOF.
 func (p *parser) peakToken() tokens.Token {
 	token, _ := p.peakTokenIndexed()
