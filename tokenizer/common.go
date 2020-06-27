@@ -14,9 +14,12 @@ type commonTokens struct {
 	SpecialNewline whitespace.Whitespace
 	Newline        whitespace.Whitespace
 
-	Comma     tokens.Comma
-	SemiColon tokens.SemiColon
-	Equals    tokens.Equals
+	Comma            tokens.Comma
+	SemiColon        tokens.SemiColon
+	Equals           tokens.Equals
+	Plus             tokens.Plus
+	LeftParentheses  tokens.LeftParentheses
+	RightParentheses tokens.RightParentheses
 }
 
 var (
@@ -44,8 +47,11 @@ var (
 			Value: "\n",
 		},
 
-		Comma:     tokens.Comma{},
-		SemiColon: tokens.SemiColon{},
-		Equals:    tokens.Equals{},
+		Comma:            tokens.Comma{},
+		SemiColon:        tokens.SemiColon{},
+		Equals:           tokens.Equals{},
+		Plus:             tokens.Plus{},
+		LeftParentheses:  tokens.LeftParentheses{},
+		RightParentheses: tokens.RightParentheses{},
 	}
 )

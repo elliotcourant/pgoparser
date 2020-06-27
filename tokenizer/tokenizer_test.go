@@ -30,11 +30,14 @@ func TestTokenizer_NextToken(t *testing.T) {
 
 	t.Run("symbols", func(t *testing.T) {
 		// TODO (elliotcourant) Add tests for more symbols.
-		tokenizer := NewTokenizer(",;=")
+		tokenizer := NewTokenizer(",;=()+")
 
 		testNextToken(t, tokenizer, common.Comma)
 		testNextToken(t, tokenizer, common.SemiColon)
 		testNextToken(t, tokenizer, common.Equals)
+		testNextToken(t, tokenizer, common.LeftParentheses)
+		testNextToken(t, tokenizer, common.RightParentheses)
+		testNextToken(t, tokenizer, common.Plus)
 
 		// EOF
 		testNextToken(t, tokenizer, common.EOF)

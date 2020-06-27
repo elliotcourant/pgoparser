@@ -57,3 +57,21 @@ type GreaterThanOrEqualTo struct{}
 func (s GreaterThanOrEqualTo) Token() {}
 
 func (s GreaterThanOrEqualTo) String() string { return ">=" }
+
+type LeftParentheses struct{}
+
+func (s LeftParentheses) Token() {}
+
+func (s LeftParentheses) String() string { return "(" }
+
+type RightParentheses struct{}
+
+func (s RightParentheses) Token() {}
+
+func (s RightParentheses) String() string { return ")" }
+
+type Plus struct{}
+
+func (s Plus) Token() {}
+
+func (s Plus) String() string { return "+" }

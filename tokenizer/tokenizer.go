@@ -89,15 +89,17 @@ func (t *Tokenizer) nextToken() (tokens.Token, error) {
 	case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
 		return t.tokenizeNumber()
 	case '(':
-
+		return t.consumeAndReturn(common.LeftParentheses)
 	case ')':
-
+		return t.consumeAndReturn(common.RightParentheses)
 	case ',':
 		return t.consumeAndReturn(common.Comma)
 	case ';':
 		return t.consumeAndReturn(common.SemiColon)
 	case '=':
 		return t.consumeAndReturn(common.Equals)
+	case '+':
+		return t.consumeAndReturn(common.Plus)
 	}
 
 	return nil, nil
