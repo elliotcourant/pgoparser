@@ -3,7 +3,7 @@ package tokenizer
 import (
 	"testing"
 
-	"github.com/elliotcourant/pgoparser/keywords_v2"
+	"github.com/elliotcourant/pgoparser/keywords"
 	"github.com/elliotcourant/pgoparser/tokens"
 	"github.com/elliotcourant/pgoparser/words"
 	"github.com/stretchr/testify/assert"

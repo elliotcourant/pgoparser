@@ -1,7 +1,7 @@
 package parser
 
 import (
-	"github.com/elliotcourant/pgoparser/keywords_v2"
+	"github.com/elliotcourant/pgoparser/keywords"
 	"github.com/elliotcourant/pgoparser/tokenizer"
 	"github.com/elliotcourant/pgoparser/tokens"
 	"github.com/elliotcourant/pgoparser/tree"

@@ -1,7 +1,7 @@
 package parser
 
 import (
-	keywords "github.com/elliotcourant/pgoparser/keywords_v2"
+	keywords "github.com/elliotcourant/pgoparser/keywords"
 	"github.com/elliotcourant/pgoparser/types"
 	"strings"
 )

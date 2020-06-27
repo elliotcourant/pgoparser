@@ -1,8 +1,7 @@
 package parser
 
 import (
-	"fmt"
-	"github.com/elliotcourant/pgoparser/keywords_v2"
+	"github.com/elliotcourant/pgoparser/keywords"
 	"github.com/elliotcourant/pgoparser/tree"
 )
 
@@ -24,15 +23,19 @@ func (p *parser) parseCreate() (tree.Statement, error) {
 
 func (p *parser) parseCreateTable() (tree.Statement, error) {
 	ifNotExists := p.parseKeywords(keywords.IF, keywords.NOT, keywords.EXISTS)
-	tableName, err := p.parseIdentifier()
+	tableName, err := p.parseTableName()
 	if err != nil {
 		return nil, err
 	}
-	fmt.Sprint(tableName)
+
+	columns, _, err := p.parseColumns()
+	if err != nil {
+		return nil, err
+	}
 
 	return tree.CreateTableStatement{
 		IfNotExists: ifNotExists,
-		TableName:   tree.TableName{},
-		Columns:     nil,
+		TableName:   tableName,
+		Columns:     columns,
 	}, nil
 }

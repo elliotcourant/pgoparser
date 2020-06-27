@@ -30,3 +30,18 @@ func TestStructMatch(t *testing.T) {
 	assert.True(t, someToken == (tokens.EOF{}))
 	assert.False(t, someToken == (tokens.Comma{}))
 }
+
+func BenchmarkParse(b *testing.B) {
+	sql := `CREATE TABLE IF NOT EXISTS users (id BIGINT PRIMARY KEY, email TEXT);`
+
+	parsed, err := Parse(sql)
+	assert.NoError(b, err)
+	assert.NotNil(b, parsed)
+
+	b.ReportAllocs()
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		parsed, err = Parse(sql)
+	}
+}
