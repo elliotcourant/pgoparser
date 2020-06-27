@@ -5,5 +5,5 @@ import (
 )
 
 func (p *parser) expected(expected, found interface{}) error {
-	return errors.Errorf("expected %v found %v - [%d]", expected, found, p.index)
+	return errors.Errorf("expected %v found %v", expected, found)
 }

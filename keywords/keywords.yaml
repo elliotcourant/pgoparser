@@ -29,3 +29,6 @@ keywords:
   - DATABASE
   - USER
   - AS
+  - SCHEMA
+  - IF
+  - EXISTS

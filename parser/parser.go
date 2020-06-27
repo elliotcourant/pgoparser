@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"github.com/elliotcourant/pgoparser/keywords"
 	"github.com/elliotcourant/pgoparser/tokenizer"
 	"github.com/elliotcourant/pgoparser/tokens"
 	"github.com/elliotcourant/pgoparser/tree"
@@ -31,7 +32,7 @@ func Parse(sql string) ([]tree.Statement, error) {
 			expectingStatementDelimiter = false
 		}
 
-		nextToken, _ := parser.peakToken()
+		nextToken := parser.peakToken()
 
 		// If we really have reached the end of the buffer, then exit gracefully.
 		if nextToken == (tokens.EOF{}) {
@@ -55,5 +56,12 @@ func Parse(sql string) ([]tree.Statement, error) {
 }
 
 func (p *parser) parseStatement() (tree.Statement, error) {
-	return nil, nil
+	switch token := p.nextToken().(type) {
+	case keywords.SELECT:
+		panic("select queries not implemented")
+	case keywords.CREATE:
+		return p.parseCreate()
+	default:
+		return nil, p.expected("a sql statement", token)
+	}
 }

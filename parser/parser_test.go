@@ -7,11 +7,20 @@ import (
 )
 
 func TestParse(t *testing.T) {
-	t.Run("simple", func(t *testing.T) {
-		sql := `CREATE TABLE users (id BIGINT PRIMARY KEY, email TEXT);`
-		parsed, err := Parse(sql)
-		assert.NoError(t, err)
-		assert.NotNil(t, parsed)
+	t.Run("create", func(t *testing.T) {
+		t.Run("create bad", func(t *testing.T) {
+			sql := `CREATE SOMETHING`
+			parsed, err := Parse(sql)
+			assert.EqualError(t, err, "expected TABLE, VIEW, INDEX or SCHEMA after CREATE found SOMETHING")
+			assert.Nil(t, parsed)
+		})
+
+		t.Run("create table", func(t *testing.T) {
+			sql := `CREATE TABLE IF NOT EXISTS users (id BIGINT PRIMARY KEY, email TEXT);`
+			parsed, err := Parse(sql)
+			assert.NoError(t, err)
+			assert.NotNil(t, parsed)
+		})
 	})
 }
 

@@ -8,7 +8,7 @@ import (
 // consumeTokenMaybe will return true if the next non-whitespace token matches the provided token. It will then move the
 // current index to that position. If the next non-whitespace token does not match it will return false and do nothing.
 func (p *parser) consumeTokenMaybe(token tokens.Token) bool {
-	if nextToken, index := p.peakToken(); nextToken == token {
+	if nextToken, index := p.peakTokenIndexed(); nextToken == token {
 		p.index = index // Move the index forward
 		return true
 	}
@@ -23,9 +23,15 @@ func (p *parser) nextToken() (token tokens.Token) {
 	return
 }
 
-// peakToken will return the first non-whitespace token that has not yet been processed. Or it will return the EOF. It
-// will also return the new index if you decide to move forward to the specified token.
-func (p *parser) peakToken() (tokens.Token, int) {
+// peakToken will return the first non-whitespace token that has not yet been processed. Or it will return the EOF.
+func (p *parser) peakToken() tokens.Token {
+	token, _ := p.peakTokenIndexed()
+	return token
+}
+
+// peakTokenIndexed will return the first non-whitespace token that has not yet been processed. Or it will return the
+// EOF. It will also return the new index if you decide to move forward to the specified token.
+func (p *parser) peakTokenIndexed() (tokens.Token, int) {
 	return p.peakNthToken(0)
 }
 

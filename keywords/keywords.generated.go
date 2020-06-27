@@ -15,10 +15,12 @@ var (
 		"CROSS":      NewCROSSKeyword,
 		"DATABASE":   NewDATABASEKeyword,
 		"DISTINCT":   NewDISTINCTKeyword,
+		"EXISTS":     NewEXISTSKeyword,
 		"FOREIGN":    NewFOREIGNKeyword,
 		"FROM":       NewFROMKeyword,
 		"GROUP":      NewGROUPKeyword,
 		"HAVING":     NewHAVINGKeyword,
+		"IF":         NewIFKeyword,
 		"INDEX":      NewINDEXKeyword,
 		"INNER":      NewINNERKeyword,
 		"IS":         NewISKeyword,
@@ -31,6 +33,7 @@ var (
 		"OFFSET":     NewOFFSETKeyword,
 		"OUTER":      NewOUTERKeyword,
 		"PRIMARY":    NewPRIMARYKeyword,
+		"SCHEMA":     NewSCHEMAKeyword,
 		"SELECT":     NewSELECTKeyword,
 		"TABLE":      NewTABLEKeyword,
 		"UNIQUE":     NewUNIQUEKeyword,
@@ -51,15 +54,11 @@ func NewASKeyword(value string) Keyword {
 		panic("cannot create keyword AS from " + value)
 	}
 
-	return AS{
-		Value: value,
-	}
+	return AS{}
 }
 
 // AS is a pgoparser keyword.
-type AS struct {
-	Value string
-}
+type AS struct{}
 
 // Token implements the Token interface for AS.
 func (keyword AS) Token() {}
@@ -77,7 +76,7 @@ func (keyword AS) Keyword() {}
 
 // String returns the actual input string representation of the word.
 func (keyword AS) String() string {
-	return keyword.Value
+	return "AS"
 }
 
 var (
@@ -90,15 +89,11 @@ func NewBYKeyword(value string) Keyword {
 		panic("cannot create keyword BY from " + value)
 	}
 
-	return BY{
-		Value: value,
-	}
+	return BY{}
 }
 
 // BY is a pgoparser keyword.
-type BY struct {
-	Value string
-}
+type BY struct{}
 
 // Token implements the Token interface for BY.
 func (keyword BY) Token() {}
@@ -116,7 +111,7 @@ func (keyword BY) Keyword() {}
 
 // String returns the actual input string representation of the word.
 func (keyword BY) String() string {
-	return keyword.Value
+	return "BY"
 }
 
 var (
@@ -129,15 +124,11 @@ func NewCONSTRAINTKeyword(value string) Keyword {
 		panic("cannot create keyword CONSTRAINT from " + value)
 	}
 
-	return CONSTRAINT{
-		Value: value,
-	}
+	return CONSTRAINT{}
 }
 
 // CONSTRAINT is a pgoparser keyword.
-type CONSTRAINT struct {
-	Value string
-}
+type CONSTRAINT struct{}
 
 // Token implements the Token interface for CONSTRAINT.
 func (keyword CONSTRAINT) Token() {}
@@ -155,7 +146,7 @@ func (keyword CONSTRAINT) Keyword() {}
 
 // String returns the actual input string representation of the word.
 func (keyword CONSTRAINT) String() string {
-	return keyword.Value
+	return "CONSTRAINT"
 }
 
 var (
@@ -168,15 +159,11 @@ func NewCREATEKeyword(value string) Keyword {
 		panic("cannot create keyword CREATE from " + value)
 	}
 
-	return CREATE{
-		Value: value,
-	}
+	return CREATE{}
 }
 
 // CREATE is a pgoparser keyword.
-type CREATE struct {
-	Value string
-}
+type CREATE struct{}
 
 // Token implements the Token interface for CREATE.
 func (keyword CREATE) Token() {}
@@ -194,7 +181,7 @@ func (keyword CREATE) Keyword() {}
 
 // String returns the actual input string representation of the word.
 func (keyword CREATE) String() string {
-	return keyword.Value
+	return "CREATE"
 }
 
 var (
@@ -207,15 +194,11 @@ func NewCROSSKeyword(value string) Keyword {
 		panic("cannot create keyword CROSS from " + value)
 	}
 
-	return CROSS{
-		Value: value,
-	}
+	return CROSS{}
 }
 
 // CROSS is a pgoparser keyword.
-type CROSS struct {
-	Value string
-}
+type CROSS struct{}
 
 // Token implements the Token interface for CROSS.
 func (keyword CROSS) Token() {}
@@ -233,7 +216,7 @@ func (keyword CROSS) Keyword() {}
 
 // String returns the actual input string representation of the word.
 func (keyword CROSS) String() string {
-	return keyword.Value
+	return "CROSS"
 }
 
 var (
@@ -246,15 +229,11 @@ func NewDATABASEKeyword(value string) Keyword {
 		panic("cannot create keyword DATABASE from " + value)
 	}
 
-	return DATABASE{
-		Value: value,
-	}
+	return DATABASE{}
 }
 
 // DATABASE is a pgoparser keyword.
-type DATABASE struct {
-	Value string
-}
+type DATABASE struct{}
 
 // Token implements the Token interface for DATABASE.
 func (keyword DATABASE) Token() {}
@@ -272,7 +251,7 @@ func (keyword DATABASE) Keyword() {}
 
 // String returns the actual input string representation of the word.
 func (keyword DATABASE) String() string {
-	return keyword.Value
+	return "DATABASE"
 }
 
 var (
@@ -285,15 +264,11 @@ func NewDISTINCTKeyword(value string) Keyword {
 		panic("cannot create keyword DISTINCT from " + value)
 	}
 
-	return DISTINCT{
-		Value: value,
-	}
+	return DISTINCT{}
 }
 
 // DISTINCT is a pgoparser keyword.
-type DISTINCT struct {
-	Value string
-}
+type DISTINCT struct{}
 
 // Token implements the Token interface for DISTINCT.
 func (keyword DISTINCT) Token() {}
@@ -311,7 +286,42 @@ func (keyword DISTINCT) Keyword() {}
 
 // String returns the actual input string representation of the word.
 func (keyword DISTINCT) String() string {
-	return keyword.Value
+	return "DISTINCT"
+}
+
+var (
+	_           Keyword = EXISTS{}
+	_EXISTS_STR         = strings.ToUpper("EXISTS")
+)
+
+func NewEXISTSKeyword(value string) Keyword {
+	if strings.ToUpper(value) != _EXISTS_STR {
+		panic("cannot create keyword EXISTS from " + value)
+	}
+
+	return EXISTS{}
+}
+
+// EXISTS is a pgoparser keyword.
+type EXISTS struct{}
+
+// Token implements the Token interface for EXISTS.
+func (keyword EXISTS) Token() {}
+
+// Word implements the Word interface for EXISTS.
+func (keyword EXISTS) Word() {}
+
+// Quotes will always return quotes.None for a valid keyword.
+func (keyword EXISTS) Quotes() quotes.Quotes {
+	return quotes.None
+}
+
+// Keyword implements the Keyword interface for EXISTS.
+func (keyword EXISTS) Keyword() {}
+
+// String returns the actual input string representation of the word.
+func (keyword EXISTS) String() string {
+	return "EXISTS"
 }
 
 var (
@@ -324,15 +334,11 @@ func NewFOREIGNKeyword(value string) Keyword {
 		panic("cannot create keyword FOREIGN from " + value)
 	}
 
-	return FOREIGN{
-		Value: value,
-	}
+	return FOREIGN{}
 }
 
 // FOREIGN is a pgoparser keyword.
-type FOREIGN struct {
-	Value string
-}
+type FOREIGN struct{}
 
 // Token implements the Token interface for FOREIGN.
 func (keyword FOREIGN) Token() {}
@@ -350,7 +356,7 @@ func (keyword FOREIGN) Keyword() {}
 
 // String returns the actual input string representation of the word.
 func (keyword FOREIGN) String() string {
-	return keyword.Value
+	return "FOREIGN"
 }
 
 var (
@@ -363,15 +369,11 @@ func NewFROMKeyword(value string) Keyword {
 		panic("cannot create keyword FROM from " + value)
 	}
 
-	return FROM{
-		Value: value,
-	}
+	return FROM{}
 }
 
 // FROM is a pgoparser keyword.
-type FROM struct {
-	Value string
-}
+type FROM struct{}
 
 // Token implements the Token interface for FROM.
 func (keyword FROM) Token() {}
@@ -389,7 +391,7 @@ func (keyword FROM) Keyword() {}
 
 // String returns the actual input string representation of the word.
 func (keyword FROM) String() string {
-	return keyword.Value
+	return "FROM"
 }
 
 var (
@@ -402,15 +404,11 @@ func NewGROUPKeyword(value string) Keyword {
 		panic("cannot create keyword GROUP from " + value)
 	}
 
-	return GROUP{
-		Value: value,
-	}
+	return GROUP{}
 }
 
 // GROUP is a pgoparser keyword.
-type GROUP struct {
-	Value string
-}
+type GROUP struct{}
 
 // Token implements the Token interface for GROUP.
 func (keyword GROUP) Token() {}
@@ -428,7 +426,7 @@ func (keyword GROUP) Keyword() {}
 
 // String returns the actual input string representation of the word.
 func (keyword GROUP) String() string {
-	return keyword.Value
+	return "GROUP"
 }
 
 var (
@@ -441,15 +439,11 @@ func NewHAVINGKeyword(value string) Keyword {
 		panic("cannot create keyword HAVING from " + value)
 	}
 
-	return HAVING{
-		Value: value,
-	}
+	return HAVING{}
 }
 
 // HAVING is a pgoparser keyword.
-type HAVING struct {
-	Value string
-}
+type HAVING struct{}
 
 // Token implements the Token interface for HAVING.
 func (keyword HAVING) Token() {}
@@ -467,7 +461,42 @@ func (keyword HAVING) Keyword() {}
 
 // String returns the actual input string representation of the word.
 func (keyword HAVING) String() string {
-	return keyword.Value
+	return "HAVING"
+}
+
+var (
+	_       Keyword = IF{}
+	_IF_STR         = strings.ToUpper("IF")
+)
+
+func NewIFKeyword(value string) Keyword {
+	if strings.ToUpper(value) != _IF_STR {
+		panic("cannot create keyword IF from " + value)
+	}
+
+	return IF{}
+}
+
+// IF is a pgoparser keyword.
+type IF struct{}
+
+// Token implements the Token interface for IF.
+func (keyword IF) Token() {}
+
+// Word implements the Word interface for IF.
+func (keyword IF) Word() {}
+
+// Quotes will always return quotes.None for a valid keyword.
+func (keyword IF) Quotes() quotes.Quotes {
+	return quotes.None
+}
+
+// Keyword implements the Keyword interface for IF.
+func (keyword IF) Keyword() {}
+
+// String returns the actual input string representation of the word.
+func (keyword IF) String() string {
+	return "IF"
 }
 
 var (
@@ -480,15 +509,11 @@ func NewINDEXKeyword(value string) Keyword {
 		panic("cannot create keyword INDEX from " + value)
 	}
 
-	return INDEX{
-		Value: value,
-	}
+	return INDEX{}
 }
 
 // INDEX is a pgoparser keyword.
-type INDEX struct {
-	Value string
-}
+type INDEX struct{}
 
 // Token implements the Token interface for INDEX.
 func (keyword INDEX) Token() {}
@@ -506,7 +531,7 @@ func (keyword INDEX) Keyword() {}
 
 // String returns the actual input string representation of the word.
 func (keyword INDEX) String() string {
-	return keyword.Value
+	return "INDEX"
 }
 
 var (
@@ -519,15 +544,11 @@ func NewINNERKeyword(value string) Keyword {
 		panic("cannot create keyword INNER from " + value)
 	}
 
-	return INNER{
-		Value: value,
-	}
+	return INNER{}
 }
 
 // INNER is a pgoparser keyword.
-type INNER struct {
-	Value string
-}
+type INNER struct{}
 
 // Token implements the Token interface for INNER.
 func (keyword INNER) Token() {}
@@ -545,7 +566,7 @@ func (keyword INNER) Keyword() {}
 
 // String returns the actual input string representation of the word.
 func (keyword INNER) String() string {
-	return keyword.Value
+	return "INNER"
 }
 
 var (
@@ -558,15 +579,11 @@ func NewISKeyword(value string) Keyword {
 		panic("cannot create keyword IS from " + value)
 	}
 
-	return IS{
-		Value: value,
-	}
+	return IS{}
 }
 
 // IS is a pgoparser keyword.
-type IS struct {
-	Value string
-}
+type IS struct{}
 
 // Token implements the Token interface for IS.
 func (keyword IS) Token() {}
@@ -584,7 +601,7 @@ func (keyword IS) Keyword() {}
 
 // String returns the actual input string representation of the word.
 func (keyword IS) String() string {
-	return keyword.Value
+	return "IS"
 }
 
 var (
@@ -597,15 +614,11 @@ func NewJOINKeyword(value string) Keyword {
 		panic("cannot create keyword JOIN from " + value)
 	}
 
-	return JOIN{
-		Value: value,
-	}
+	return JOIN{}
 }
 
 // JOIN is a pgoparser keyword.
-type JOIN struct {
-	Value string
-}
+type JOIN struct{}
 
 // Token implements the Token interface for JOIN.
 func (keyword JOIN) Token() {}
@@ -623,7 +636,7 @@ func (keyword JOIN) Keyword() {}
 
 // String returns the actual input string representation of the word.
 func (keyword JOIN) String() string {
-	return keyword.Value
+	return "JOIN"
 }
 
 var (
@@ -636,15 +649,11 @@ func NewKEYKeyword(value string) Keyword {
 		panic("cannot create keyword KEY from " + value)
 	}
 
-	return KEY{
-		Value: value,
-	}
+	return KEY{}
 }
 
 // KEY is a pgoparser keyword.
-type KEY struct {
-	Value string
-}
+type KEY struct{}
 
 // Token implements the Token interface for KEY.
 func (keyword KEY) Token() {}
@@ -662,7 +671,7 @@ func (keyword KEY) Keyword() {}
 
 // String returns the actual input string representation of the word.
 func (keyword KEY) String() string {
-	return keyword.Value
+	return "KEY"
 }
 
 var (
@@ -675,15 +684,11 @@ func NewLEFTKeyword(value string) Keyword {
 		panic("cannot create keyword LEFT from " + value)
 	}
 
-	return LEFT{
-		Value: value,
-	}
+	return LEFT{}
 }
 
 // LEFT is a pgoparser keyword.
-type LEFT struct {
-	Value string
-}
+type LEFT struct{}
 
 // Token implements the Token interface for LEFT.
 func (keyword LEFT) Token() {}
@@ -701,7 +706,7 @@ func (keyword LEFT) Keyword() {}
 
 // String returns the actual input string representation of the word.
 func (keyword LEFT) String() string {
-	return keyword.Value
+	return "LEFT"
 }
 
 var (
@@ -714,15 +719,11 @@ func NewLIMITKeyword(value string) Keyword {
 		panic("cannot create keyword LIMIT from " + value)
 	}
 
-	return LIMIT{
-		Value: value,
-	}
+	return LIMIT{}
 }
 
 // LIMIT is a pgoparser keyword.
-type LIMIT struct {
-	Value string
-}
+type LIMIT struct{}
 
 // Token implements the Token interface for LIMIT.
 func (keyword LIMIT) Token() {}
@@ -740,7 +741,7 @@ func (keyword LIMIT) Keyword() {}
 
 // String returns the actual input string representation of the word.
 func (keyword LIMIT) String() string {
-	return keyword.Value
+	return "LIMIT"
 }
 
 var (
@@ -753,15 +754,11 @@ func NewNOTKeyword(value string) Keyword {
 		panic("cannot create keyword NOT from " + value)
 	}
 
-	return NOT{
-		Value: value,
-	}
+	return NOT{}
 }
 
 // NOT is a pgoparser keyword.
-type NOT struct {
-	Value string
-}
+type NOT struct{}
 
 // Token implements the Token interface for NOT.
 func (keyword NOT) Token() {}
@@ -779,7 +776,7 @@ func (keyword NOT) Keyword() {}
 
 // String returns the actual input string representation of the word.
 func (keyword NOT) String() string {
-	return keyword.Value
+	return "NOT"
 }
 
 var (
@@ -792,15 +789,11 @@ func NewNULLKeyword(value string) Keyword {
 		panic("cannot create keyword NULL from " + value)
 	}
 
-	return NULL{
-		Value: value,
-	}
+	return NULL{}
 }
 
 // NULL is a pgoparser keyword.
-type NULL struct {
-	Value string
-}
+type NULL struct{}
 
 // Token implements the Token interface for NULL.
 func (keyword NULL) Token() {}
@@ -818,7 +811,7 @@ func (keyword NULL) Keyword() {}
 
 // String returns the actual input string representation of the word.
 func (keyword NULL) String() string {
-	return keyword.Value
+	return "NULL"
 }
 
 var (
@@ -831,15 +824,11 @@ func NewOFFSETKeyword(value string) Keyword {
 		panic("cannot create keyword OFFSET from " + value)
 	}
 
-	return OFFSET{
-		Value: value,
-	}
+	return OFFSET{}
 }
 
 // OFFSET is a pgoparser keyword.
-type OFFSET struct {
-	Value string
-}
+type OFFSET struct{}
 
 // Token implements the Token interface for OFFSET.
 func (keyword OFFSET) Token() {}
@@ -857,7 +846,7 @@ func (keyword OFFSET) Keyword() {}
 
 // String returns the actual input string representation of the word.
 func (keyword OFFSET) String() string {
-	return keyword.Value
+	return "OFFSET"
 }
 
 var (
@@ -870,15 +859,11 @@ func NewOUTERKeyword(value string) Keyword {
 		panic("cannot create keyword OUTER from " + value)
 	}
 
-	return OUTER{
-		Value: value,
-	}
+	return OUTER{}
 }
 
 // OUTER is a pgoparser keyword.
-type OUTER struct {
-	Value string
-}
+type OUTER struct{}
 
 // Token implements the Token interface for OUTER.
 func (keyword OUTER) Token() {}
@@ -896,7 +881,7 @@ func (keyword OUTER) Keyword() {}
 
 // String returns the actual input string representation of the word.
 func (keyword OUTER) String() string {
-	return keyword.Value
+	return "OUTER"
 }
 
 var (
@@ -909,15 +894,11 @@ func NewPRIMARYKeyword(value string) Keyword {
 		panic("cannot create keyword PRIMARY from " + value)
 	}
 
-	return PRIMARY{
-		Value: value,
-	}
+	return PRIMARY{}
 }
 
 // PRIMARY is a pgoparser keyword.
-type PRIMARY struct {
-	Value string
-}
+type PRIMARY struct{}
 
 // Token implements the Token interface for PRIMARY.
 func (keyword PRIMARY) Token() {}
@@ -935,7 +916,42 @@ func (keyword PRIMARY) Keyword() {}
 
 // String returns the actual input string representation of the word.
 func (keyword PRIMARY) String() string {
-	return keyword.Value
+	return "PRIMARY"
+}
+
+var (
+	_           Keyword = SCHEMA{}
+	_SCHEMA_STR         = strings.ToUpper("SCHEMA")
+)
+
+func NewSCHEMAKeyword(value string) Keyword {
+	if strings.ToUpper(value) != _SCHEMA_STR {
+		panic("cannot create keyword SCHEMA from " + value)
+	}
+
+	return SCHEMA{}
+}
+
+// SCHEMA is a pgoparser keyword.
+type SCHEMA struct{}
+
+// Token implements the Token interface for SCHEMA.
+func (keyword SCHEMA) Token() {}
+
+// Word implements the Word interface for SCHEMA.
+func (keyword SCHEMA) Word() {}
+
+// Quotes will always return quotes.None for a valid keyword.
+func (keyword SCHEMA) Quotes() quotes.Quotes {
+	return quotes.None
+}
+
+// Keyword implements the Keyword interface for SCHEMA.
+func (keyword SCHEMA) Keyword() {}
+
+// String returns the actual input string representation of the word.
+func (keyword SCHEMA) String() string {
+	return "SCHEMA"
 }
 
 var (
@@ -948,15 +964,11 @@ func NewSELECTKeyword(value string) Keyword {
 		panic("cannot create keyword SELECT from " + value)
 	}
 
-	return SELECT{
-		Value: value,
-	}
+	return SELECT{}
 }
 
 // SELECT is a pgoparser keyword.
-type SELECT struct {
-	Value string
-}
+type SELECT struct{}
 
 // Token implements the Token interface for SELECT.
 func (keyword SELECT) Token() {}
@@ -974,7 +986,7 @@ func (keyword SELECT) Keyword() {}
 
 // String returns the actual input string representation of the word.
 func (keyword SELECT) String() string {
-	return keyword.Value
+	return "SELECT"
 }
 
 var (
@@ -987,15 +999,11 @@ func NewTABLEKeyword(value string) Keyword {
 		panic("cannot create keyword TABLE from " + value)
 	}
 
-	return TABLE{
-		Value: value,
-	}
+	return TABLE{}
 }
 
 // TABLE is a pgoparser keyword.
-type TABLE struct {
-	Value string
-}
+type TABLE struct{}
 
 // Token implements the Token interface for TABLE.
 func (keyword TABLE) Token() {}
@@ -1013,7 +1021,7 @@ func (keyword TABLE) Keyword() {}
 
 // String returns the actual input string representation of the word.
 func (keyword TABLE) String() string {
-	return keyword.Value
+	return "TABLE"
 }
 
 var (
@@ -1026,15 +1034,11 @@ func NewUNIQUEKeyword(value string) Keyword {
 		panic("cannot create keyword UNIQUE from " + value)
 	}
 
-	return UNIQUE{
-		Value: value,
-	}
+	return UNIQUE{}
 }
 
 // UNIQUE is a pgoparser keyword.
-type UNIQUE struct {
-	Value string
-}
+type UNIQUE struct{}
 
 // Token implements the Token interface for UNIQUE.
 func (keyword UNIQUE) Token() {}
@@ -1052,7 +1056,7 @@ func (keyword UNIQUE) Keyword() {}
 
 // String returns the actual input string representation of the word.
 func (keyword UNIQUE) String() string {
-	return keyword.Value
+	return "UNIQUE"
 }
 
 var (
@@ -1065,15 +1069,11 @@ func NewUSERKeyword(value string) Keyword {
 		panic("cannot create keyword USER from " + value)
 	}
 
-	return USER{
-		Value: value,
-	}
+	return USER{}
 }
 
 // USER is a pgoparser keyword.
-type USER struct {
-	Value string
-}
+type USER struct{}
 
 // Token implements the Token interface for USER.
 func (keyword USER) Token() {}
@@ -1091,7 +1091,7 @@ func (keyword USER) Keyword() {}
 
 // String returns the actual input string representation of the word.
 func (keyword USER) String() string {
-	return keyword.Value
+	return "USER"
 }
 
 var (
@@ -1104,15 +1104,11 @@ func NewVIEWKeyword(value string) Keyword {
 		panic("cannot create keyword VIEW from " + value)
 	}
 
-	return VIEW{
-		Value: value,
-	}
+	return VIEW{}
 }
 
 // VIEW is a pgoparser keyword.
-type VIEW struct {
-	Value string
-}
+type VIEW struct{}
 
 // Token implements the Token interface for VIEW.
 func (keyword VIEW) Token() {}
@@ -1130,7 +1126,7 @@ func (keyword VIEW) Keyword() {}
 
 // String returns the actual input string representation of the word.
 func (keyword VIEW) String() string {
-	return keyword.Value
+	return "VIEW"
 }
 
 var (
@@ -1143,15 +1139,11 @@ func NewWHEREKeyword(value string) Keyword {
 		panic("cannot create keyword WHERE from " + value)
 	}
 
-	return WHERE{
-		Value: value,
-	}
+	return WHERE{}
 }
 
 // WHERE is a pgoparser keyword.
-type WHERE struct {
-	Value string
-}
+type WHERE struct{}
 
 // Token implements the Token interface for WHERE.
 func (keyword WHERE) Token() {}
@@ -1169,7 +1161,7 @@ func (keyword WHERE) Keyword() {}
 
 // String returns the actual input string representation of the word.
 func (keyword WHERE) String() string {
-	return keyword.Value
+	return "WHERE"
 }
 
 var (
@@ -1182,15 +1174,11 @@ func NewWITHKeyword(value string) Keyword {
 		panic("cannot create keyword WITH from " + value)
 	}
 
-	return WITH{
-		Value: value,
-	}
+	return WITH{}
 }
 
 // WITH is a pgoparser keyword.
-type WITH struct {
-	Value string
-}
+type WITH struct{}
 
 // Token implements the Token interface for WITH.
 func (keyword WITH) Token() {}
@@ -1208,5 +1196,5 @@ func (keyword WITH) Keyword() {}
 
 // String returns the actual input string representation of the word.
 func (keyword WITH) String() string {
-	return keyword.Value
+	return "WITH"
 }

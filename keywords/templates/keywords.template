@@ -8,15 +8,11 @@ func New{{.Keyword}}Keyword(value string) Keyword {
         panic("cannot create keyword {{.Keyword}} from " + value)
     }
 
-    return {{.Keyword}}{
-        Value: value,
-    }
+    return {{.Keyword}}{}
 }
 
 // {{.Keyword}} is a pgoparser keyword.
-type {{.Keyword}} struct {
-    Value string
-}
+type {{.Keyword}} struct {}
 
 // Token implements the Token interface for {{.Keyword}}.
 func (keyword {{.Keyword}}) Token() {}
@@ -34,5 +30,5 @@ func (keyword {{.Keyword}}) Keyword() {}
 
 // String returns the actual input string representation of the word.
 func (keyword {{.Keyword}}) String() string {
-    return keyword.Value
+    return "{{.Keyword}}"
 }
