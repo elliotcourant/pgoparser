@@ -30,7 +30,7 @@ func TestTokenizer_NextToken(t *testing.T) {
 
 	t.Run("symbols", func(t *testing.T) {
 		// TODO (elliotcourant) Add tests for more symbols.
-		tokenizer := NewTokenizer(",;=()+")
+		tokenizer := NewTokenizer(",;=()+-")
 
 		testNextToken(t, tokenizer, common.Comma)
 		testNextToken(t, tokenizer, common.SemiColon)
@@ -38,6 +38,7 @@ func TestTokenizer_NextToken(t *testing.T) {
 		testNextToken(t, tokenizer, common.LeftParentheses)
 		testNextToken(t, tokenizer, common.RightParentheses)
 		testNextToken(t, tokenizer, common.Plus)
+		testNextToken(t, tokenizer, common.Minus)
 
 		// EOF
 		testNextToken(t, tokenizer, common.EOF)
@@ -51,5 +52,16 @@ func TestTokenizer_NextToken(t *testing.T) {
 		assert.NoError(t, err, "should not have an error parsing number")
 		assert.IsType(t, tokens.Number{}, token)
 		assert.Equal(t, str, token.String())
+	})
+
+	t.Run("single line comment", func(t *testing.T) {
+		text := `--this is a test`
+
+		tokenizer := NewTokenizer(text)
+
+		token, err := tokenizer.nextToken()
+		assert.NoError(t, err, "should not have an error parsing single line comment")
+		assert.IsType(t, tokens.SingleLineComment{}, token)
+		assert.Equal(t, "this is a test", token.String())
 	})
 }

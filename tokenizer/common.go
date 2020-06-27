@@ -18,6 +18,7 @@ type commonTokens struct {
 	SemiColon        tokens.SemiColon
 	Equals           tokens.Equals
 	Plus             tokens.Plus
+	Minus            tokens.Minus
 	LeftParentheses  tokens.LeftParentheses
 	RightParentheses tokens.RightParentheses
 }
@@ -51,6 +52,7 @@ var (
 		SemiColon:        tokens.SemiColon{},
 		Equals:           tokens.Equals{},
 		Plus:             tokens.Plus{},
+		Minus:            tokens.Minus{},
 		LeftParentheses:  tokens.LeftParentheses{},
 		RightParentheses: tokens.RightParentheses{},
 	}

@@ -75,3 +75,9 @@ type Plus struct{}
 func (s Plus) Token() {}
 
 func (s Plus) String() string { return "+" }
+
+type Minus struct{}
+
+func (s Minus) Token() {}
+
+func (s Minus) String() string { return "-" }

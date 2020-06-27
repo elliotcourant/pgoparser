@@ -100,6 +100,15 @@ func (t *Tokenizer) nextToken() (tokens.Token, error) {
 		return t.consumeAndReturn(common.Equals)
 	case '+':
 		return t.consumeAndReturn(common.Plus)
+	case '-':
+		// Consume the first - and peak the next character, if the next character is also a - then this is a single line
+		// comment.
+		if nextCharacter := t.scanAndPeak(); nextCharacter == '-' {
+			return t.tokenizeSingleLineComment()
+		}
+
+		// We don't want to consume again since we already did a scan above when we peaked.
+		return common.Minus, nil
 	}
 
 	return nil, nil
