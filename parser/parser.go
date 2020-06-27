@@ -2,6 +2,7 @@ package parser
 
 import (
 	"github.com/elliotcourant/pgoparser/keywords"
+	"github.com/elliotcourant/pgoparser/symbols"
 	"github.com/elliotcourant/pgoparser/tokenizer"
 	"github.com/elliotcourant/pgoparser/tokens"
 	"github.com/elliotcourant/pgoparser/tree"
@@ -28,7 +29,7 @@ func Parse(sql string) ([]tree.Statement, error) {
 	statements := make([]tree.Statement, 0)
 	for {
 		// Ignore empty statements (between successive statement delimiters)
-		for parser.consumeTokenMaybe(tokens.SemiColon{}) {
+		for parser.consumeTokenMaybe(symbols.SemiColon) {
 			expectingStatementDelimiter = false
 		}
 
@@ -65,4 +66,30 @@ func (p *parser) parseStatement() (tree.Statement, error) {
 	default:
 		return nil, p.expected("a sql statement", token)
 	}
+}
+
+func (p *parser) expectToken(token tokens.Token) error {
+	if p.consumeTokenMaybe(token) {
+		return nil
+	} else {
+		return p.expected(token, p.peakToken())
+	}
+}
+
+func (p *parser) parseCommaSeparated(do func() (tokens.Token, error)) ([]tokens.Token, error) {
+	values := make([]tokens.Token, 0)
+	for {
+		token, err := do()
+		if err != nil {
+			return nil, err
+		}
+
+		values = append(values, token)
+
+		if !p.consumeTokenMaybe(symbols.Comma) {
+			break // If the next token is not a comma then break the loop.
+		}
+	}
+
+	return values, nil
 }

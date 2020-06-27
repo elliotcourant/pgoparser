@@ -17,7 +17,10 @@ func (p *parser) parseKeywords(expected ...keywords.Keyword) bool {
 }
 
 func (p *parser) parseKeyword(keyword keywords.Keyword) bool {
-	if nextToken, index := p.peakTokenIndexed(); nextToken == keyword {
+	nextToken, index := p.peakTokenIndexed()
+
+	// Type check the keywords just in case.
+	if kw, ok := nextToken.(keywords.Keyword); ok && kw == keyword {
 		p.index = index // If we were able to parse the keyword then progress the buffer.
 		return true
 	}

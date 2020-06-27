@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"github.com/elliotcourant/pgoparser/symbols"
 	"github.com/elliotcourant/pgoparser/tokens"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -21,6 +22,13 @@ func TestParse(t *testing.T) {
 			assert.NoError(t, err)
 			assert.NotNil(t, parsed)
 		})
+
+		t.Run("create table w foreign key", func(t *testing.T) {
+			sql := `CREATE TABLE IF NOT EXISTS users (id BIGINT PRIMARY KEY, email TEXT UNIQUE NOT NULL, account_id BIGINT NOT NULL REFERENCES accounts (account_id));`
+			parsed, err := Parse(sql)
+			assert.NoError(t, err)
+			assert.NotNil(t, parsed)
+		})
 	})
 }
 
@@ -28,11 +36,11 @@ func TestStructMatch(t *testing.T) {
 	var someToken tokens.Token
 	someToken = tokens.EOF{}
 	assert.True(t, someToken == (tokens.EOF{}))
-	assert.False(t, someToken == (tokens.Comma{}))
+	assert.False(t, someToken == (symbols.Comma))
 }
 
-func BenchmarkParse(b *testing.B) {
-	sql := `CREATE TABLE IF NOT EXISTS users (id BIGINT PRIMARY KEY, email TEXT);`
+func BenchmarkParseElliotsParser(b *testing.B) {
+	sql := `CREATE TABLE IF NOT EXISTS users (id BIGINT PRIMARY KEY, email TEXT UNIQUE NOT NULL, account_id BIGINT NOT NULL REFERENCES accounts (account_id));`
 
 	parsed, err := Parse(sql)
 	assert.NoError(b, err)

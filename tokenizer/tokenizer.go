@@ -1,6 +1,7 @@
 package tokenizer
 
 import (
+	"github.com/elliotcourant/pgoparser/symbols"
 	"strings"
 
 	"github.com/elliotcourant/pgoparser/quotes"
@@ -109,17 +110,17 @@ func (t *Tokenizer) nextToken() (tokens.Token, error) {
 	case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
 		return t.tokenizeNumber()
 	case '(':
-		return t.consumeAndReturn(common.LeftParentheses)
+		return t.consumeAndReturn(symbols.LeftParentheses)
 	case ')':
-		return t.consumeAndReturn(common.RightParentheses)
+		return t.consumeAndReturn(symbols.RightParentheses)
 	case ',':
-		return t.consumeAndReturn(common.Comma)
+		return t.consumeAndReturn(symbols.Comma)
 	case ';':
-		return t.consumeAndReturn(common.SemiColon)
+		return t.consumeAndReturn(symbols.SemiColon)
 	case '=':
-		return t.consumeAndReturn(common.Equals)
+		return t.consumeAndReturn(symbols.Equals)
 	case '+':
-		return t.consumeAndReturn(common.Plus)
+		return t.consumeAndReturn(symbols.Plus)
 	case '-':
 		// Consume the first - and peak the next character, if the next character is also a - then this is a single line
 		// comment.
@@ -128,7 +129,7 @@ func (t *Tokenizer) nextToken() (tokens.Token, error) {
 		}
 
 		// We don't want to consume again since we already did a scan above when we peaked.
-		return common.Minus, nil
+		return symbols.Minus, nil
 	case '/':
 		// If the following character is a * then that means this is a multi line comment.
 		if nextCharacter := t.scanAndPeak(); nextCharacter == '*' {
@@ -136,20 +137,20 @@ func (t *Tokenizer) nextToken() (tokens.Token, error) {
 		}
 
 		// We don't want to consume again since we already did a scan above when we peaked.
-		return common.Division, nil
+		return symbols.Division, nil
 	case '*':
-		return t.consumeAndReturn(common.Multiply)
+		return t.consumeAndReturn(symbols.Multiply)
 	case '%':
-		return t.consumeAndReturn(common.Modulo)
+		return t.consumeAndReturn(symbols.Modulo)
 	case '|':
 		if nextCharacter := t.scanAndPeak(); nextCharacter == '|' {
-			return t.consumeAndReturn(common.StringConcatenation)
+			return t.consumeAndReturn(symbols.StringConcatenation)
 		}
 
 		// We don't want to consume again since we already did a scan above when we peaked.
-		return common.Pipe, nil
+		return symbols.Pipe, nil
 	case '.':
-		return t.consumeAndReturn(common.Period)
+		return t.consumeAndReturn(symbols.Period)
 
 	default:
 		// If the current character could be the start of an identifier.

@@ -2,6 +2,7 @@ package tree
 
 import (
 	"fmt"
+	"github.com/elliotcourant/pgoparser/tokens"
 	"github.com/pkg/errors"
 	"strings"
 )
@@ -12,7 +13,7 @@ type TableName struct {
 	TableName   string
 }
 
-func NewTableName(name []string) (TableName, error) {
+func NewTableName(name tokens.ObjectName) (TableName, error) {
 	tableName := TableName{
 		CatalogName: "",
 		SchemaName:  "",
@@ -21,16 +22,16 @@ func NewTableName(name []string) (TableName, error) {
 
 	switch len(name) {
 	case 1:
-		tableName.TableName = name[0]
+		tableName.TableName = name[0].String()
 	case 2:
-		tableName.SchemaName = name[0]
-		tableName.TableName = name[1]
+		tableName.SchemaName = name[0].String()
+		tableName.TableName = name[1].String()
 	case 3:
-		tableName.CatalogName = name[0]
-		tableName.SchemaName = name[1]
-		tableName.TableName = name[2]
+		tableName.CatalogName = name[0].String()
+		tableName.SchemaName = name[1].String()
+		tableName.TableName = name[2].String()
 	default:
-		return tableName, errors.Errorf("expected 1, 2 or 3 part table name identifier, found %d: ", len(name), name)
+		return tableName, errors.Errorf("expected 1, 2 or 3 part table name identifier, found %d: %s", len(name), name)
 	}
 
 	return tableName, nil

@@ -102,4 +102,7 @@ const (
 	NUMERIC
 	DECIMAL
 	DEC
+	ON
+	DELETE
+	UPDATE
 )

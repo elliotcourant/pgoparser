@@ -1,9 +1,8 @@
 package parser
 
 import (
-	keywords "github.com/elliotcourant/pgoparser/keywords"
+	"github.com/elliotcourant/pgoparser/keywords"
 	"github.com/elliotcourant/pgoparser/types"
-	"strings"
 )
 
 func (p *parser) parseDataType() (types.Type, error) {
@@ -36,7 +35,7 @@ func (p *parser) parseDataType() (types.Type, error) {
 		}
 
 		return types.Custom{
-			Value: strings.Join(typeName, "."),
+			Value: typeName.String(),
 		}, nil
 	}
 

@@ -1,13 +1,35 @@
 package tree
 
 import (
+	"fmt"
+	"github.com/elliotcourant/pgoparser/tokens"
 	"github.com/elliotcourant/pgoparser/types"
 )
 
 type ColumnDefinition struct {
-	Name    string
+	Name    ColumnName
 	Type    types.Type
 	Options []ColumnOption
+}
+
+type ColumnName struct {
+	TableName  TableName
+	ColumnName string
+}
+
+func NewColumnName(name tokens.ObjectName) (column ColumnName, err error) {
+	var tableName TableName
+	if len(name) > 1 {
+		tableName, err = NewTableName(name[:len(name)-2])
+		if err != nil {
+			return column, err
+		}
+	}
+
+	return ColumnName{
+		TableName:  tableName,
+		ColumnName: name[len(name)-1].String(),
+	}, nil
 }
 
 var (
@@ -42,4 +64,18 @@ func (o NotNull) ColumnOption() {}
 
 func (o NotNull) String() string {
 	return "NOT NULL"
+}
+
+type ForeignKey struct {
+	ForeignTable    TableName
+	ReferredColumns []ColumnName
+	OnDelete        interface{}
+	OnUpdate        interface{}
+}
+
+func (o ForeignKey) ColumnOption() {}
+
+func (o ForeignKey) String() string {
+	// TODO (elliotcourant) Improve stringification of this.
+	return fmt.Sprintf("REFERENCES %s (%s)", o.ForeignTable, o.ReferredColumns)
 }

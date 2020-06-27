@@ -1,6 +1,7 @@
 package tokenizer
 
 import (
+	"github.com/elliotcourant/pgoparser/symbols"
 	"testing"
 
 	"github.com/elliotcourant/pgoparser/keywords"
@@ -52,13 +53,13 @@ func TestTokenizer_NextToken(t *testing.T) {
 		// TODO (elliotcourant) Add tests for more symbols.
 		tokenizer := NewTokenizer(",;=()+-")
 
-		testNextToken(t, tokenizer, common.Comma)
-		testNextToken(t, tokenizer, common.SemiColon)
-		testNextToken(t, tokenizer, common.Equals)
-		testNextToken(t, tokenizer, common.LeftParentheses)
-		testNextToken(t, tokenizer, common.RightParentheses)
-		testNextToken(t, tokenizer, common.Plus)
-		testNextToken(t, tokenizer, common.Minus)
+		testNextToken(t, tokenizer, symbols.Comma)
+		testNextToken(t, tokenizer, symbols.SemiColon)
+		testNextToken(t, tokenizer, symbols.Equals)
+		testNextToken(t, tokenizer, symbols.LeftParentheses)
+		testNextToken(t, tokenizer, symbols.RightParentheses)
+		testNextToken(t, tokenizer, symbols.Plus)
+		testNextToken(t, tokenizer, symbols.Minus)
 
 		// EOF
 		testNextToken(t, tokenizer, common.EOF)
