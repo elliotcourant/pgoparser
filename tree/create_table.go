@@ -1,9 +1,5 @@
 package tree
 
-import (
-	"github.com/elliotcourant/pgoparser/types"
-)
-
 var (
 	_ Statement = CreateTableStatement{}
 )
@@ -18,9 +14,4 @@ func (c CreateTableStatement) Statement() {}
 
 func (c CreateTableStatement) String() string {
 	return "CREATE TABLE"
-}
-
-type ColumnDefinition struct {
-	Name string
-	Type types.Type
 }

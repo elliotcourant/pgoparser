@@ -9,16 +9,32 @@ type Custom struct {
 	Value string
 }
 
-func (c Custom) Type() {}
+func (t Custom) Type() {}
 
-func (c Custom) String() string {
-	return c.Value
+func (t Custom) String() string {
+	return t.Value
 }
 
-type BigInt struct{}
+type SmallInteger struct{}
 
-func (b BigInt) Type() {}
+func (t SmallInteger) Type() {}
 
-func (b BigInt) String() string {
+func (t SmallInteger) String() string {
+	return "SMALLINT"
+}
+
+type BigInteger struct{}
+
+func (t BigInteger) Type() {}
+
+func (t BigInteger) String() string {
 	return "BIGINT"
+}
+
+type Text struct{}
+
+func (t Text) Type() {}
+
+func (t Text) String() string {
+	return "TEXT"
 }

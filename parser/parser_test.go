@@ -16,7 +16,7 @@ func TestParse(t *testing.T) {
 		})
 
 		t.Run("create table", func(t *testing.T) {
-			sql := `CREATE TABLE IF NOT EXISTS users (id BIGINT PRIMARY KEY, email TEXT);`
+			sql := `CREATE TABLE IF NOT EXISTS users (id BIGINT PRIMARY KEY, email TEXT UNIQUE NOT NULL);`
 			parsed, err := Parse(sql)
 			assert.NoError(t, err)
 			assert.NotNil(t, parsed)

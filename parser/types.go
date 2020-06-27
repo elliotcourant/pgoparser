@@ -13,8 +13,10 @@ func (p *parser) parseDataType() (types.Type, error) {
 	case keywords.REAL:
 	case keywords.DOUBLE:
 	case keywords.SMALLINT:
+		return types.SmallInteger{}, nil
 	case keywords.INT, keywords.INTEGER:
 	case keywords.BIGINT:
+		return types.BigInteger{}, nil
 	case keywords.CHAR, keywords.CHARACTER:
 	case keywords.UUID:
 	case keywords.DATE:
@@ -23,6 +25,7 @@ func (p *parser) parseDataType() (types.Type, error) {
 	case keywords.INTERVAL:
 	case keywords.REGCLASS:
 	case keywords.TEXT:
+		return types.Text{}, nil
 	case keywords.BYTEA:
 	case keywords.NUMERIC, keywords.DECIMAL, keywords.DEC:
 	default:

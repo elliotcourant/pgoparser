@@ -97,7 +97,7 @@ func (p *parser) parseColumnDefinition() (definition tree.ColumnDefinition, err 
 		fmt.Sprint(collation)
 	}
 
-	options := make([]interface{}, 0)
+	definition.Options = make([]tree.ColumnOption, 0)
 OptionLoop:
 	for {
 		nextToken := p.peakToken()
@@ -110,47 +110,49 @@ OptionLoop:
 				return definition, err
 			}
 
-			options = append(options, option)
+			definition.Options = append(definition.Options, option)
 		}
 	}
 
-	// TODO (elliotcourant) Do something with options.
 	return definition, nil
 }
 
-func (p *parser) parseColumnOptionDefinition() (_ interface{}, err error) {
+func (p *parser) parseColumnOptionDefinition() (_ tree.ColumnOption, err error) {
 	var name string
 	if p.parseKeyword(keywords.CONSTRAINT) {
 		name, err = p.parseIdentifier()
 		if err != nil {
 			return nil, err
 		}
+
+		// TODO (elliotcourant) do something with name.
+		fmt.Sprint(name)
 	}
 
-	nextToken := p.peakToken()
+	nextToken := p.nextToken()
 	switch nextToken {
 	case keywords.NOT:
-		if !p.parseKeywords(keywords.NOT, keywords.NULL) {
-			token, _ := p.peakNthToken(1)
-			return nil, p.expected("NULL", token)
+		if !p.parseKeyword(keywords.NULL) {
+			return nil, p.expected("NULL", p.peakToken())
 		}
+
+		return tree.NotNull(0), nil
 	case keywords.NULL:
 	case keywords.DEFAULT:
 	case keywords.PRIMARY:
-		if !p.parseKeywords(keywords.PRIMARY, keywords.KEY) {
-			token, _ := p.peakNthToken(1)
-			return nil, p.expected("KEY", token)
+		if !p.parseKeyword(keywords.KEY) {
+			return nil, p.expected("KEY", p.peakToken())
 		}
+
+		return tree.PrimaryKey(0), nil
 	case keywords.UNIQUE:
+		return tree.Unique(0), nil
 	case keywords.REFERENCES:
 	case keywords.CHECK:
 
 	default:
 		return nil, p.expected("column option", nextToken)
 	}
-
-	// TODO (elliotcourant) do something with name.
-	fmt.Sprint(name)
 
 	return nil, nil
 }
