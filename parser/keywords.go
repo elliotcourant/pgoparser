@@ -1,7 +1,7 @@
 package parser
 
 import (
-	"github.com/elliotcourant/pgoparser/keywords"
+	"github.com/elliotcourant/pgoparser/keywords_v2"
 )
 
 func (p *parser) parseKeywords(expected ...keywords.Keyword) bool {

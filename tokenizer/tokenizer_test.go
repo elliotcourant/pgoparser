@@ -3,7 +3,7 @@ package tokenizer
 import (
 	"testing"
 
-	"github.com/elliotcourant/pgoparser/keywords"
+	"github.com/elliotcourant/pgoparser/keywords_v2"
 	"github.com/elliotcourant/pgoparser/tokens"
 	"github.com/elliotcourant/pgoparser/words"
 	"github.com/stretchr/testify/assert"
@@ -102,7 +102,7 @@ func TestTokenizer_NextToken(t *testing.T) {
 
 		token, err := tokenizer.nextToken()
 		assert.NoError(t, err)
-		assert.IsType(t, keywords.SELECT{}, token)
+		assert.IsType(t, keywords.SELECT, token)
 
 		testNextToken(t, tokenizer, common.Space)
 
@@ -115,7 +115,7 @@ func TestTokenizer_NextToken(t *testing.T) {
 
 		token, err = tokenizer.nextToken()
 		assert.NoError(t, err)
-		assert.IsType(t, keywords.FROM{}, token)
+		assert.IsType(t, keywords.FROM, token)
 
 		testNextToken(t, tokenizer, common.Space)
 

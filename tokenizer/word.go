@@ -3,7 +3,7 @@ package tokenizer
 import (
 	"strings"
 
-	"github.com/elliotcourant/pgoparser/keywords"
+	"github.com/elliotcourant/pgoparser/keywords_v2"
 	"github.com/elliotcourant/pgoparser/quotes"
 	"github.com/elliotcourant/pgoparser/tokens"
 	"github.com/elliotcourant/pgoparser/words"
@@ -25,7 +25,7 @@ func (t *Tokenizer) tokenizeWord() (tokens.Token, error) {
 	str := buf.String()
 
 	// If the word is a valid keyword then use return a new keyword token.
-	if keywords.IsValidKeyword(str) {
+	if keywords.IsKeyword(str) {
 		return keywords.NewKeyword(str), nil
 	}
 

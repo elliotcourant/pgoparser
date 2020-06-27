@@ -1,7 +1,7 @@
 package parser
 
 import (
-	"github.com/elliotcourant/pgoparser/keywords"
+	"github.com/elliotcourant/pgoparser/keywords_v2"
 	"github.com/elliotcourant/pgoparser/tokenizer"
 	"github.com/elliotcourant/pgoparser/tokens"
 	"github.com/elliotcourant/pgoparser/tree"
@@ -56,7 +56,8 @@ func Parse(sql string) ([]tree.Statement, error) {
 }
 
 func (p *parser) parseStatement() (tree.Statement, error) {
-	switch token := p.nextToken().(type) {
+	token := p.nextToken()
+	switch token {
 	case keywords.SELECT:
 		panic("select queries not implemented")
 	case keywords.CREATE:
