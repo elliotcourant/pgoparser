@@ -1,8 +1,20 @@
 package tokens
 
+var (
+	_ Comment = SingleLineComment{}
+	_ Comment = MultiLineComment{}
+)
+
+type Comment interface {
+	Token
+	Comment()
+}
+
 type SingleLineComment struct {
 	Value string
 }
+
+func (s SingleLineComment) Comment() {}
 
 func (s SingleLineComment) Token() {}
 
@@ -13,6 +25,8 @@ func (s SingleLineComment) String() string {
 type MultiLineComment struct {
 	Value string
 }
+
+func (s MultiLineComment) Comment() {}
 
 func (s MultiLineComment) Token() {}
 

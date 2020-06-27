@@ -27,6 +27,26 @@ func NewTokenizer(str string) *Tokenizer {
 	}
 }
 
+func (t *Tokenizer) Tokenize() ([]tokens.Token, error) {
+	allTokens := make([]tokens.Token, 0)
+
+	for {
+		token, err := t.nextToken()
+		if err != nil {
+			return nil, err
+		}
+
+		allTokens = append(allTokens, token)
+
+		// If we have reached the end of the buffer then break our loop.
+		if _, ok := token.(tokens.EOF); ok {
+			break
+		}
+	}
+
+	return allTokens, nil
+}
+
 func (t *Tokenizer) peak() byte {
 	if len(t.input) < t.offset+1 {
 		return eof
