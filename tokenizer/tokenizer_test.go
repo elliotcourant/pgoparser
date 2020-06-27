@@ -3,6 +3,7 @@ package tokenizer
 import (
 	"testing"
 
+	"github.com/elliotcourant/pgoparser/keywords"
 	"github.com/elliotcourant/pgoparser/tokens"
 	"github.com/elliotcourant/pgoparser/words"
 	"github.com/stretchr/testify/assert"
@@ -94,5 +95,33 @@ func TestTokenizer_NextToken(t *testing.T) {
 		token, err := tokenizer.nextToken()
 		assert.NoError(t, err, "should not have an error parsing multi line comment")
 		assert.IsType(t, tokens.MultiLineComment{}, token)
+	})
+
+	t.Run("keyword", func(t *testing.T) {
+		tokenizer := NewTokenizer("SELECT things FROM stuff")
+
+		token, err := tokenizer.nextToken()
+		assert.NoError(t, err)
+		assert.IsType(t, keywords.SELECT{}, token)
+
+		testNextToken(t, tokenizer, common.Space)
+
+		token, err = tokenizer.nextToken()
+		assert.NoError(t, err)
+		assert.IsType(t, words.String{}, token)
+		assert.Equal(t, "things", token.String())
+
+		testNextToken(t, tokenizer, common.Space)
+
+		token, err = tokenizer.nextToken()
+		assert.NoError(t, err)
+		assert.IsType(t, keywords.FROM{}, token)
+
+		testNextToken(t, tokenizer, common.Space)
+
+		token, err = tokenizer.nextToken()
+		assert.NoError(t, err)
+		assert.IsType(t, words.String{}, token)
+		assert.Equal(t, "stuff", token.String())
 	})
 }

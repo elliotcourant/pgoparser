@@ -130,6 +130,13 @@ func (t *Tokenizer) nextToken() (tokens.Token, error) {
 		return common.Pipe, nil
 	case '.':
 		return t.consumeAndReturn(common.Period)
+
+	default:
+		// If the current character could be the start of an identifier.
+		if t.isIdentifierStart(character) {
+			// If it is the start, then try to tokenize a word.
+			return t.tokenizeWord()
+		}
 	}
 
 	return nil, nil
