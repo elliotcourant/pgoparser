@@ -14,14 +14,19 @@ type commonTokens struct {
 	SpecialNewline whitespace.Whitespace
 	Newline        whitespace.Whitespace
 
-	Comma            tokens.Comma
-	SemiColon        tokens.SemiColon
-	Equals           tokens.Equals
-	Plus             tokens.Plus
-	Minus            tokens.Minus
-	Division         tokens.Division
-	LeftParentheses  tokens.LeftParentheses
-	RightParentheses tokens.RightParentheses
+	Comma               tokens.Comma
+	Period              tokens.Period
+	SemiColon           tokens.SemiColon
+	Equals              tokens.Equals
+	Plus                tokens.Plus
+	Minus               tokens.Minus
+	Division            tokens.Division
+	Multiply            tokens.Multiply
+	LeftParentheses     tokens.LeftParentheses
+	RightParentheses    tokens.RightParentheses
+	Modulo              tokens.Modulo
+	Pipe                tokens.Pipe
+	StringConcatenation tokens.StringConcatenation
 }
 
 var (
@@ -49,13 +54,18 @@ var (
 			Value: "\n",
 		},
 
-		Comma:            tokens.Comma{},
-		SemiColon:        tokens.SemiColon{},
-		Equals:           tokens.Equals{},
-		Plus:             tokens.Plus{},
-		Minus:            tokens.Minus{},
-		Division:         tokens.Division{},
-		LeftParentheses:  tokens.LeftParentheses{},
-		RightParentheses: tokens.RightParentheses{},
+		Comma:               tokens.Comma{},
+		Period:              tokens.Period{},
+		SemiColon:           tokens.SemiColon{},
+		Equals:              tokens.Equals{},
+		Plus:                tokens.Plus{},
+		Minus:               tokens.Minus{},
+		Division:            tokens.Division{},
+		Multiply:            tokens.Multiply{},
+		LeftParentheses:     tokens.LeftParentheses{},
+		RightParentheses:    tokens.RightParentheses{},
+		Modulo:              tokens.Modulo{},
+		Pipe:                tokens.Pipe{},
+		StringConcatenation: tokens.StringConcatenation{},
 	}
 )

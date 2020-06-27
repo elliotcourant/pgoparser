@@ -117,6 +117,19 @@ func (t *Tokenizer) nextToken() (tokens.Token, error) {
 
 		// We don't want to consume again since we already did a scan above when we peaked.
 		return common.Division, nil
+	case '*':
+		return t.consumeAndReturn(common.Multiply)
+	case '%':
+		return t.consumeAndReturn(common.Modulo)
+	case '|':
+		if nextCharacter := t.scanAndPeak(); nextCharacter == '|' {
+			return t.consumeAndReturn(common.StringConcatenation)
+		}
+
+		// We don't want to consume again since we already did a scan above when we peaked.
+		return common.Pipe, nil
+	case '.':
+		return t.consumeAndReturn(common.Period)
 	}
 
 	return nil, nil

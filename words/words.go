@@ -5,32 +5,81 @@ import (
 	"github.com/elliotcourant/pgoparser/tokens"
 )
 
+var (
+	_ Word = String{}
+	_ Word = SingleQuotedString{}
+	_ Word = DoubleQuotedString{}
+)
+
 type Word interface {
 	tokens.Token
 	Word()
 	Quotes() quotes.Quotes
 }
 
-type base struct {
-	Value     string
-	QuoteType quotes.Quotes
+func NewWord(value string, quoteType quotes.Quotes) Word {
+	switch quoteType {
+	case quotes.None:
+		return String{
+			Value: value,
+		}
+	case quotes.Single:
+		return SingleQuotedString{
+			Value: value,
+		}
+	case quotes.Double:
+		return DoubleQuotedString{
+			Value: value,
+		}
+	default:
+		panic("invalid quote type")
+	}
 }
 
-func (b base) Quotes() quotes.Quotes {
-	return b.QuoteType
+type String struct {
+	Value string
 }
 
-func (b base) Token() {}
+func (b String) Quotes() quotes.Quotes {
+	return quotes.None
+}
 
-func (b base) String() string {
+func (b String) Token() {}
+
+func (b String) String() string {
 	return b.Value
 }
 
-func (b base) Word() {}
+func (b String) Word() {}
 
-func NewWord(value string, quoteType quotes.Quotes) Word {
-	return &base{
-		Value:     value,
-		QuoteType: quoteType,
-	}
+type SingleQuotedString struct {
+	Value string
 }
+
+func (s SingleQuotedString) Quotes() quotes.Quotes {
+	return quotes.Single
+}
+
+func (s SingleQuotedString) Token() {}
+
+func (s SingleQuotedString) String() string {
+	return s.Value
+}
+
+func (s SingleQuotedString) Word() {}
+
+type DoubleQuotedString struct {
+	Value string
+}
+
+func (s DoubleQuotedString) Quotes() quotes.Quotes {
+	return quotes.Single
+}
+
+func (s DoubleQuotedString) Token() {}
+
+func (s DoubleQuotedString) String() string {
+	return s.Value
+}
+
+func (s DoubleQuotedString) Word() {}

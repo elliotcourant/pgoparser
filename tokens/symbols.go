@@ -6,6 +6,12 @@ func (s Comma) Token() {}
 
 func (s Comma) String() string { return "," }
 
+type Period struct{}
+
+func (s Period) Token() {}
+
+func (s Period) String() string { return "." }
+
 type SemiColon struct{}
 
 func (s SemiColon) Token() {}
@@ -17,14 +23,6 @@ type Equals struct{}
 func (s Equals) Token() {}
 
 func (s Equals) String() string { return "=" }
-
-func NewNotEqualsToken(value string) Token {
-	if value != "!=" && value != "<>" {
-		panic(value + " is not a valid not equals token")
-	}
-
-	return NotEquals{Value: value}
-}
 
 type NotEquals struct {
 	Value string
@@ -87,3 +85,27 @@ type Division struct{}
 func (s Division) Token() {}
 
 func (s Division) String() string { return "/" }
+
+type Multiply struct{}
+
+func (s Multiply) Token() {}
+
+func (s Multiply) String() string { return "*" }
+
+type Modulo struct{}
+
+func (s Modulo) Token() {}
+
+func (s Modulo) String() string { return "%" }
+
+type Pipe struct{}
+
+func (s Pipe) Token() {}
+
+func (s Pipe) String() string { return "|" }
+
+type StringConcatenation struct{}
+
+func (s StringConcatenation) Token() {}
+
+func (s StringConcatenation) String() string { return "||" }

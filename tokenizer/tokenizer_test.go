@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/elliotcourant/pgoparser/tokens"
+	"github.com/elliotcourant/pgoparser/words"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -26,6 +27,24 @@ func TestTokenizer_NextToken(t *testing.T) {
 
 		// EOF
 		testNextToken(t, tokenizer, common.EOF)
+	})
+
+	t.Run("single quoted string", func(t *testing.T) {
+		tokenizer := NewTokenizer(`'this is a single quoted string'`)
+
+		token, err := tokenizer.nextToken()
+		assert.NoError(t, err, "should not have an error single quoted string")
+		assert.Implements(t, new(words.Word), token)
+		assert.Equal(t, "this is a single quoted string", token.String())
+	})
+
+	t.Run("double quoted string", func(t *testing.T) {
+		tokenizer := NewTokenizer(`"this is a double quoted string"`)
+
+		token, err := tokenizer.nextToken()
+		assert.NoError(t, err, "should not have an error double quoted string")
+		assert.Implements(t, new(words.Word), token)
+		assert.Equal(t, "this is a double quoted string", token.String())
 	})
 
 	t.Run("symbols", func(t *testing.T) {
