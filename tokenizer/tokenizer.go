@@ -29,7 +29,9 @@ func NewTokenizer(str string) *Tokenizer {
 }
 
 func (t *Tokenizer) Tokenize() ([]tokens.Token, error) {
-	allTokens := make([]tokens.Token, 0)
+	// When we create the allTokens array, I guess at the capacity. This will save us a few allocations potentially as
+	// I'm basically assuming that every token will be at least 3 bytes worth of data on average.
+	allTokens := make([]tokens.Token, 0, len(t.input)/5)
 
 	for {
 		token, err := t.nextToken()
@@ -57,18 +59,17 @@ func (t *Tokenizer) peak() byte {
 }
 
 func (t *Tokenizer) scan() byte {
-	if len(t.input) < t.offset+1 {
-		return eof
-	}
-
 	t.offset++
-
 	return t.input[t.offset-1]
+}
+
+func (t *Tokenizer) index() int {
+	return t.offset
 }
 
 // scanAndPeak will consume the current character and will peak the following character.
 func (t *Tokenizer) scanAndPeak() byte {
-	t.scan()
+	t.offset++
 	return t.peak()
 }
 
@@ -77,7 +78,7 @@ func (t *Tokenizer) scanString() string {
 }
 
 func (t *Tokenizer) consumeAndReturn(token tokens.Token) (tokens.Token, error) {
-	t.scan()          // Consume the current character.
+	t.offset++        // Consume the current character.
 	return token, nil // And return without an error.
 }
 
@@ -85,7 +86,7 @@ func (t *Tokenizer) nextToken() (tokens.Token, error) {
 	character := t.peak()
 	switch character {
 	case eof:
-		return t.consumeAndReturn(common.EOF)
+		return common.EOF, nil
 	case ' ':
 		return t.consumeAndReturn(common.Space)
 	case '\t':

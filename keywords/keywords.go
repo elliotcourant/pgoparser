@@ -2,6 +2,7 @@ package keywords
 
 import (
 	"github.com/elliotcourant/pgoparser/quotes"
+	"github.com/elliotcourant/pgoparser/tokens"
 	"github.com/elliotcourant/pgoparser/words"
 	"strings"
 )
@@ -33,10 +34,10 @@ func IsKeyword(keyword string) bool {
 	return ok
 }
 
-func NewKeyword(keyword string) Keyword {
+func NewKeywordMaybe(keyword string) tokens.Token {
 	word, ok := _keywordMap[strings.ToUpper(keyword)]
 	if !ok {
-		panic("not a valid keyword")
+		return words.NewWord(keyword, quotes.None)
 	}
 
 	return word
@@ -105,4 +106,9 @@ const (
 	ON
 	DELETE
 	UPDATE
+	RESTRICT
+	CASCADE
+	SET
+	ACTION
+	NO
 )

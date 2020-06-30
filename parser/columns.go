@@ -162,8 +162,8 @@ func (p *parser) parseColumnOptionDefinition() (_ tree.ColumnOption, err error) 
 		foreignKey := tree.ForeignKey{
 			ForeignTable:    foreignTable,
 			ReferredColumns: make([]tree.ColumnName, len(referredColumns)),
-			OnDelete:        nil,
-			OnUpdate:        nil,
+			OnDelete:        0,
+			OnUpdate:        0,
 		}
 
 		for i, column := range referredColumns {
@@ -175,10 +175,16 @@ func (p *parser) parseColumnOptionDefinition() (_ tree.ColumnOption, err error) 
 
 		for {
 			// If on delete has not yet been set and the next two keywords are ON DELETE, then parse the delete.
-			if foreignKey.OnDelete == nil && p.parseKeywords(keywords.ON, keywords.DELETE) {
-				foreignKey.OnDelete = 1
-			} else if foreignKey.OnUpdate == nil && p.parseKeywords(keywords.ON, keywords.UPDATE) {
-				foreignKey.OnUpdate = 1
+			if foreignKey.OnDelete == 0 && p.parseKeywords(keywords.ON, keywords.DELETE) {
+				foreignKey.OnDelete, err = p.parseReferentialAction()
+				if err != nil {
+					return nil, err
+				}
+			} else if foreignKey.OnUpdate == 0 && p.parseKeywords(keywords.ON, keywords.UPDATE) {
+				foreignKey.OnUpdate, err = p.parseReferentialAction()
+				if err != nil {
+					return nil, err
+				}
 			} else {
 				break
 			}
@@ -206,5 +212,31 @@ func (p *parser) parseParenthesizedColumnList(optional bool) ([]tokens.Token, er
 		return nil, nil
 	} else {
 		return nil, p.expected("a list of columns in parentheses", p.peakToken())
+	}
+}
+
+func (p *parser) parseReferentialAction() (tree.ReferenceAction, error) {
+	nextToken := p.nextToken()
+	switch nextToken {
+	case keywords.RESTRICT:
+		return tree.Restrict, nil
+	case keywords.CASCADE:
+		return tree.Cascade, nil
+	case keywords.SET:
+		switch p.peakToken() {
+		case keywords.NULL:
+			return tree.SetNull, nil
+		case keywords.DEFAULT:
+			return tree.SetDefault, nil
+		default:
+			return 0, p.expected("NULL or DEFAULT", p.peakToken())
+		}
+	case keywords.NO:
+		if !p.parseKeyword(keywords.ACTION) {
+			return 0, p.expected("ACTION", p.peakToken())
+		}
+		return tree.NoAction, nil
+	default:
+		return 0, p.expected("one of RESTRICT, CASCADE, SET NULL, NO ACTION or SET DEFAULT", nextToken)
 	}
 }
