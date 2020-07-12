@@ -38,6 +38,14 @@ func (o NotNull) String() string {
 	return "NOT NULL"
 }
 
+type Null uint8
+
+func (o Null) ColumnOption() {}
+
+func (o Null) String() string {
+	return "NULL"
+}
+
 type ForeignKey struct {
 	ForeignTable    TableName
 	ReferredColumns []ColumnName

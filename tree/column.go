@@ -5,7 +5,8 @@ import (
 )
 
 type ColumnDefinition struct {
-	Name    ColumnName
-	Type    types.Type
-	Options []ColumnOption
+	Name     ColumnName
+	Type     types.Type
+	Nullable bool
+	Options  []ColumnOption
 }

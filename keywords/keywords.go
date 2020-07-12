@@ -111,4 +111,7 @@ const (
 	SET
 	ACTION
 	NO
+	INSERT
+	INTO
+	VALUES
 )

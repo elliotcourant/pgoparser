@@ -63,6 +63,8 @@ func (p *parser) parseStatement() (tree.Statement, error) {
 		panic("select queries not implemented")
 	case keywords.CREATE:
 		return p.parseCreate()
+	case keywords.INSERT:
+		return p.parseInsert()
 	default:
 		return nil, p.expected("a sql statement", token)
 	}

@@ -23,8 +23,25 @@ func TestParse(t *testing.T) {
 			assert.NotNil(t, parsed)
 		})
 
-		t.Run("create table w foreign key", func(t *testing.T) {
+		t.Run("create table w reference", func(t *testing.T) {
 			sql := `CREATE TABLE IF NOT EXISTS users (id BIGINT PRIMARY KEY, email TEXT UNIQUE NOT NULL, account_id BIGINT NOT NULL REFERENCES accounts (account_id));`
+			parsed, err := Parse(sql)
+			assert.NoError(t, err)
+			assert.NotNil(t, parsed)
+		})
+
+		t.Run("create table w foreign key", func(t *testing.T) {
+			t.Skip()
+			sql := `CREATE TABLE IF NOT EXISTS users (id BIGINT PRIMARY KEY, email TEXT UNIQUE NOT NULL, account_id BIGINT NOT NULL, CONSTRAINT fk_test FOREIGN KEY accounts (account_id));`
+			parsed, err := Parse(sql)
+			assert.NoError(t, err)
+			assert.NotNil(t, parsed)
+		})
+	})
+
+	t.Run("insert", func(t *testing.T) {
+		t.Run("insert", func(t *testing.T) {
+			sql := `INSERT INTO users (user_id, name) VALUES (1, 'name');`
 			parsed, err := Parse(sql)
 			assert.NoError(t, err)
 			assert.NotNil(t, parsed)

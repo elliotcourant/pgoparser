@@ -63,6 +63,13 @@ func (p *parser) parseOptionalTableConstraint() (_ interface{}, err error) {
 	switch token {
 	case keywords.PRIMARY, keywords.UNIQUE:
 	case keywords.FOREIGN:
+		if !p.parseKeyword(keywords.KEY) {
+			return nil, p.expected("KEY", p.peakToken())
+		}
+
+		panic("foreign key not implemented")
+
+		return nil, nil
 	case keywords.CHECK:
 	default:
 		if name != nil {
@@ -77,6 +84,7 @@ func (p *parser) parseOptionalTableConstraint() (_ interface{}, err error) {
 }
 
 func (p *parser) parseColumnDefinition() (definition tree.ColumnDefinition, err error) {
+	definition.Nullable = true // Default to true for nullable.
 	definition.Name, err = p.parseColumnName()
 	if err != nil {
 		return definition, err
@@ -111,6 +119,12 @@ OptionLoop:
 				return definition, err
 			}
 
+			switch option.(type) {
+			// If the column has a primary key or not null option then set nullable to false.
+			case tree.PrimaryKey, tree.NotNull:
+				definition.Nullable = false
+			}
+
 			definition.Options = append(definition.Options, option)
 		}
 	}
@@ -139,6 +153,7 @@ func (p *parser) parseColumnOptionDefinition() (_ tree.ColumnOption, err error) 
 
 		return tree.NotNull(0), nil
 	case keywords.NULL:
+		return tree.Null(0), nil
 	case keywords.DEFAULT:
 	case keywords.PRIMARY:
 		if !p.parseKeyword(keywords.KEY) {
