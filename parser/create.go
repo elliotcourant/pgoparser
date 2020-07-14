@@ -35,7 +35,7 @@ func (p *parser) parseCreateTable() (tree.Statement, error) {
 
 	return tree.CreateTableStatement{
 		IfNotExists: ifNotExists,
-		TableName:   tableName,
+		Relation:    tableName,
 		Columns:     columns,
 	}, nil
 }

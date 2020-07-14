@@ -5,15 +5,35 @@ import (
 	"github.com/elliotcourant/pgoparser/tokens"
 	"github.com/elliotcourant/pgoparser/tree"
 	"github.com/elliotcourant/pgoparser/words"
+	"github.com/pkg/errors"
 )
 
-func (p *parser) parseTableName() (tree.TableName, error) {
+// parseTableName will parse the words that are period delimited until the end is reached. It will return
+// a range variable with the table reference. It does not currently parse aliases.
+func (p *parser) parseTableName() (tree.RangeVariable, error) {
 	objectName, err := p.parseObjectName()
 	if err != nil {
-		return tree.TableName{}, err
+		return tree.RangeVariable{}, err
 	}
 
-	return tree.NewTableName(objectName)
+	var rangeVar tree.RangeVariable
+	switch len(objectName) {
+	case 1:
+		rangeVar.RelationName = objectName[0].String()
+	case 2:
+		rangeVar.SchemaName = objectName[0].String()
+		rangeVar.RelationName = objectName[1].String()
+	case 3:
+		rangeVar.CatalogName = objectName[0].String()
+		rangeVar.SchemaName = objectName[1].String()
+		rangeVar.RelationName = objectName[2].String()
+	default:
+		return tree.RangeVariable{}, errors.Errorf("unexpect object name length: %d", len(objectName))
+	}
+
+	// TODO (elliotcourant) Add support for aliases maybe?
+
+	return rangeVar, nil
 }
 
 func (p *parser) parseColumnName() (tree.ColumnName, error) {

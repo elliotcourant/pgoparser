@@ -84,11 +84,12 @@ func (p *parser) parseOptionalTableConstraint() (_ interface{}, err error) {
 }
 
 func (p *parser) parseColumnDefinition() (definition tree.ColumnDefinition, err error) {
-	definition.Nullable = true // Default to true for nullable.
-	definition.Name, err = p.parseColumnName()
+	columnName, err := p.parseIdentifier()
 	if err != nil {
 		return definition, err
 	}
+
+	definition.ColumnName = columnName.String()
 
 	definition.Type, err = p.parseDataType()
 	if err != nil {
@@ -106,7 +107,7 @@ func (p *parser) parseColumnDefinition() (definition tree.ColumnDefinition, err 
 		fmt.Sprint(collation)
 	}
 
-	definition.Options = make([]tree.ColumnOption, 0)
+	// definition.Options = make([]tree.ColumnOption, 0)
 OptionLoop:
 	for {
 		nextToken := p.peakToken()
@@ -122,10 +123,10 @@ OptionLoop:
 			switch option.(type) {
 			// If the column has a primary key or not null option then set nullable to false.
 			case tree.PrimaryKey, tree.NotNull:
-				definition.Nullable = false
+				definition.IsNotNull = true
 			}
 
-			definition.Options = append(definition.Options, option)
+			// definition.Options = append(definition.Options, option)
 		}
 	}
 
