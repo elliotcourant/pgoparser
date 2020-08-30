@@ -47,7 +47,7 @@ func (o Null) String() string {
 }
 
 type ForeignKey struct {
-	ForeignTable    TableName
+	ForeignTable    RangeVariable
 	ReferredColumns []ColumnName
 	OnDelete        ReferenceAction
 	OnUpdate        ReferenceAction

@@ -2,35 +2,36 @@ package parser
 
 import (
 	"fmt"
-	"github.com/elliotcourant/pgoparser/keywords"
+	. "github.com/elliotcourant/pgoparser/keywords"
 	"github.com/elliotcourant/pgoparser/symbols"
 	"github.com/elliotcourant/pgoparser/tokens"
 	"github.com/elliotcourant/pgoparser/tree"
 	"github.com/elliotcourant/pgoparser/words"
 )
 
-func (p *parser) parseColumns() ([]tree.ColumnDefinition, []interface{}, error) {
+func (p *parser) parseColumns() ([]tree.ColumnDefinition, []tree.Constraint, error) {
 	// If we cant find the column opening paren then just return?
 	if !p.consumeTokenMaybe(symbols.LeftParentheses) || p.consumeTokenMaybe(symbols.RightParentheses) {
 		return nil, nil, nil
 	}
 
 	columns := make([]tree.ColumnDefinition, 0)
-	constraints := make([]interface{}, 0)
+	constraints := make([]tree.Constraint, 0)
 
 	for {
 		// Handle constraints here.
 		if constraint, err := p.parseOptionalTableConstraint(); err != nil {
 			return nil, nil, err
 		} else if constraint != nil {
-			constraints = append(constraints, constraint)
+			constraints = append(constraints, *constraint)
 		} else if _, ok := p.peakToken().(words.Word); ok { // Try to parse a column name.
-			column, err := p.parseColumnDefinition()
+			column, columnConstraints, err := p.parseColumnDefinition()
 			if err != nil {
 				return nil, nil, err
 			}
 
 			columns = append(columns, column)
+			constraints = append(constraints, columnConstraints...)
 		} else {
 			return nil, nil, p.expected("column name or constraint definition", p.peakToken())
 		}
@@ -46,14 +47,14 @@ func (p *parser) parseColumns() ([]tree.ColumnDefinition, []interface{}, error) 
 	return columns, constraints, nil
 }
 
-func (p *parser) parseOptionalTableConstraint() (_ interface{}, err error) {
-	var name tokens.Token
+func (p *parser) parseOptionalTableConstraint() (constraint *tree.Constraint, err error) {
+	var name *string
 
 	// When parsing a constraint, if we grab the constraint keyword first, then the constraint must be named and is
 	// specifically declared. If we fail to parse the name or the constraint now then we want to return an error. If not
 	// we can still fail gracefully with no error.
-	if ok := p.parseKeyword(keywords.CONSTRAINT); ok {
-		name, err = p.parseIdentifier()
+	if ok := p.parseKeyword(CONSTRAINT); ok {
+		name, err = p.parseConstraintName()
 		if err != nil {
 			return nil, err
 		}
@@ -61,16 +62,31 @@ func (p *parser) parseOptionalTableConstraint() (_ interface{}, err error) {
 
 	token := p.nextToken()
 	switch token {
-	case keywords.PRIMARY, keywords.UNIQUE:
-	case keywords.FOREIGN:
-		if !p.parseKeyword(keywords.KEY) {
+	case NOT:
+		if !p.parseKeyword(NULL) {
+			return nil, p.expected("NULL", p.peakToken())
+		}
+
+		constraint = &tree.Constraint{
+			Type:              tree.ConstraintTypeNotNull,
+			Name:              name,
+			Deferrable:        false,
+			InitiallyDeferred: false,
+			IsNoInherit:       false,
+			RawExpression:     nil,
+			CookedExpression:  nil,
+		}
+	case NULL:
+	case PRIMARY, UNIQUE:
+	case FOREIGN:
+		if !p.parseKeyword(KEY) {
 			return nil, p.expected("KEY", p.peakToken())
 		}
 
 		panic("foreign key not implemented")
 
-		return nil, nil
-	case keywords.CHECK:
+		return constraint, nil
+	case CHECK:
 	default:
 		if name != nil {
 			return nil, p.expected("PRIMARY, UNIQUE, FOREIGN or CHECK", token)
@@ -80,27 +96,41 @@ func (p *parser) parseOptionalTableConstraint() (_ interface{}, err error) {
 		}
 	}
 
-	return nil, nil
+	switch {
+	case p.parseKeywords(NOT, DEFERRABLE):
+		constraint.Deferrable = false
+	case p.parseKeywords(DEFERRABLE):
+		constraint.Deferrable = true
+	}
+
+	switch {
+	case p.parseKeywords(INITIALLY, DEFERRED):
+		constraint.InitiallyDeferred = true
+	case p.parseKeywords(INITIALLY, IMMEDIATE):
+		constraint.InitiallyDeferred = false
+	}
+
+	return constraint, nil
 }
 
-func (p *parser) parseColumnDefinition() (definition tree.ColumnDefinition, err error) {
+func (p *parser) parseColumnDefinition() (definition tree.ColumnDefinition, constraints []tree.Constraint, err error) {
 	columnName, err := p.parseIdentifier()
 	if err != nil {
-		return definition, err
+		return definition, nil, err
 	}
 
 	definition.ColumnName = columnName.String()
 
 	definition.Type, err = p.parseDataType()
 	if err != nil {
-		return definition, err
+		return definition, nil, err
 	}
 
 	// If there is a collation defined, parse it.
-	if p.parseKeyword(keywords.COLLATE) {
+	if p.parseKeyword(COLLATE) {
 		collation, err := p.parseObjectName()
 		if err != nil {
-			return definition, err
+			return definition, nil, err
 		}
 
 		// TODO (elliotcourant) Do something with the collation
@@ -117,7 +147,7 @@ OptionLoop:
 		default:
 			option, err := p.parseColumnOptionDefinition()
 			if err != nil {
-				return definition, err
+				return definition, nil, err
 			}
 
 			switch option.(type) {
@@ -130,12 +160,12 @@ OptionLoop:
 		}
 	}
 
-	return definition, nil
+	return definition, nil, nil
 }
 
 func (p *parser) parseColumnOptionDefinition() (_ tree.ColumnOption, err error) {
 	var name tokens.Token
-	if p.parseKeyword(keywords.CONSTRAINT) {
+	if p.parseKeyword(CONSTRAINT) {
 		name, err = p.parseIdentifier()
 		if err != nil {
 			return nil, err
@@ -147,24 +177,24 @@ func (p *parser) parseColumnOptionDefinition() (_ tree.ColumnOption, err error) 
 
 	nextToken := p.nextToken()
 	switch nextToken {
-	case keywords.NOT:
-		if !p.parseKeyword(keywords.NULL) {
+	case NOT:
+		if !p.parseKeyword(NULL) {
 			return nil, p.expected("NULL", p.peakToken())
 		}
 
 		return tree.NotNull(0), nil
-	case keywords.NULL:
+	case NULL:
 		return tree.Null(0), nil
-	case keywords.DEFAULT:
-	case keywords.PRIMARY:
-		if !p.parseKeyword(keywords.KEY) {
+	case DEFAULT:
+	case PRIMARY:
+		if !p.parseKeyword(KEY) {
 			return nil, p.expected("KEY", p.peakToken())
 		}
 
 		return tree.PrimaryKey(0), nil
-	case keywords.UNIQUE:
+	case UNIQUE:
 		return tree.Unique(0), nil
-	case keywords.REFERENCES:
+	case REFERENCES:
 		foreignTable, err := p.parseTableName()
 		if err != nil {
 			return nil, err
@@ -191,12 +221,12 @@ func (p *parser) parseColumnOptionDefinition() (_ tree.ColumnOption, err error) 
 
 		for {
 			// If on delete has not yet been set and the next two keywords are ON DELETE, then parse the delete.
-			if foreignKey.OnDelete == 0 && p.parseKeywords(keywords.ON, keywords.DELETE) {
+			if foreignKey.OnDelete == 0 && p.parseKeywords(ON, DELETE) {
 				foreignKey.OnDelete, err = p.parseReferentialAction()
 				if err != nil {
 					return nil, err
 				}
-			} else if foreignKey.OnUpdate == 0 && p.parseKeywords(keywords.ON, keywords.UPDATE) {
+			} else if foreignKey.OnUpdate == 0 && p.parseKeywords(ON, UPDATE) {
 				foreignKey.OnUpdate, err = p.parseReferentialAction()
 				if err != nil {
 					return nil, err
@@ -207,7 +237,7 @@ func (p *parser) parseColumnOptionDefinition() (_ tree.ColumnOption, err error) 
 		}
 
 		return foreignKey, nil
-	case keywords.CHECK:
+	case CHECK:
 
 	default:
 		return nil, p.expected("column option", nextToken)
@@ -234,21 +264,21 @@ func (p *parser) parseParenthesizedColumnList(optional bool) ([]tokens.Token, er
 func (p *parser) parseReferentialAction() (tree.ReferenceAction, error) {
 	nextToken := p.nextToken()
 	switch nextToken {
-	case keywords.RESTRICT:
+	case RESTRICT:
 		return tree.Restrict, nil
-	case keywords.CASCADE:
+	case CASCADE:
 		return tree.Cascade, nil
-	case keywords.SET:
+	case SET:
 		switch p.peakToken() {
-		case keywords.NULL:
+		case NULL:
 			return tree.SetNull, nil
-		case keywords.DEFAULT:
+		case DEFAULT:
 			return tree.SetDefault, nil
 		default:
 			return 0, p.expected("NULL or DEFAULT", p.peakToken())
 		}
-	case keywords.NO:
-		if !p.parseKeyword(keywords.ACTION) {
+	case NO:
+		if !p.parseKeyword(ACTION) {
 			return 0, p.expected("ACTION", p.peakToken())
 		}
 		return tree.NoAction, nil

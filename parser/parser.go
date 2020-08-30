@@ -57,6 +57,14 @@ func Parse(sql string) ([]tree.Statement, error) {
 }
 
 func (p *parser) parseStatement() (tree.Statement, error) {
+	switch {
+	case p.parseKeyword(keywords.SELECT):
+		panic("select queries not implemented")
+	case p.parseKeywords(keywords.CREATE, keywords.OR, keywords.REPLACE):
+	// Parse any object that can be created or replaced.
+	case p.parseKeyword(keywords.CREATE):
+		return p.parseCreate()
+	}
 	token := p.nextToken()
 	switch token {
 	case keywords.SELECT:

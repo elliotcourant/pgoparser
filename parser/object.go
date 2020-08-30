@@ -71,3 +71,13 @@ func (p *parser) parseIdentifier() (tokens.Token, error) {
 		return nil, p.expected("identifier", nextToken)
 	}
 }
+
+func (p *parser) parseConstraintName() (*string, error) {
+	switch nextToken := p.nextToken().(type) {
+	case words.Word:
+		str := nextToken.String()
+		return &str, nil
+	default:
+		return nil, p.expected("constraint name", nextToken)
+	}
+}

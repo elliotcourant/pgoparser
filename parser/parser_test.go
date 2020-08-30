@@ -41,7 +41,7 @@ func TestParse(t *testing.T) {
 
 	t.Run("insert", func(t *testing.T) {
 		t.Run("insert", func(t *testing.T) {
-			sql := `INSERT INTO users (user_id, name) VALUES (1, 'name');`
+			sql := `INSERT INTO users (user_id, name) VALUES (1, 'name'), (2, 'second name');`
 			parsed, err := Parse(sql)
 			assert.NoError(t, err)
 			assert.NotNil(t, parsed)

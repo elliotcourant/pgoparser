@@ -16,6 +16,17 @@ func (p *parser) parseKeywords(expected ...keywords.Keyword) bool {
 	return true
 }
 
+func (p *parser) parseAnyKeyword(keywords ...keywords.Keyword) bool {
+	for _, keyword := range keywords {
+		// If we find one of the keywords, then return true
+		if p.parseKeyword(keyword) {
+			return true
+		}
+	}
+
+	return false
+}
+
 func (p *parser) parseKeyword(keyword keywords.Keyword) bool {
 	nextToken, index := p.peakTokenIndexed()
 
